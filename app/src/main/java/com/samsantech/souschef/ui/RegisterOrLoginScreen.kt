@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.samsantech.souschef.ui.components.LogoWithText
-import com.samsantech.souschef.ui.components.LongButton
+import com.samsantech.souschef.ui.components.ColoredButton
 
 @Composable
 fun RegisterOrLoginScreen() {
@@ -28,7 +28,7 @@ fun RegisterOrLoginScreen() {
         LogoWithText()
 
         Column {
-            LongButton(
+            ColoredButton(
                 onClick = {  },
                 containerColorName = "white-green",
                 text = "Login"
@@ -36,7 +36,7 @@ fun RegisterOrLoginScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
             
-            LongButton(
+            ColoredButton(
                 onClick = {  },
                 containerColorName = "yellow-green",
                 text = "Sign up",

@@ -14,28 +14,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.samsantech.souschef.ui.theme.Green
+import com.samsantech.souschef.ui.theme.Yellow
 
 @Composable
-fun LongButton(modifier: Modifier = Modifier, onClick: () -> Unit, containerColorName: String = "green", text: String,
-               border: BorderStroke = BorderStroke(0.dp, Color.White), contentPadding: PaddingValues = PaddingValues(12.dp, 12.dp),
+fun ColoredButton(modifier: Modifier = Modifier, onClick: () -> Unit, containerColorName: String = "green", text: String,
+                  border: BorderStroke = BorderStroke(0.dp, Color.White), contentPadding: PaddingValues = PaddingValues(12.dp, 12.dp),
 ) {
     // default container color is green
-    var containerColor: Long = 0xFF16A637
-    var contentColor: Long = 0xFFFFFFFF
+    var containerColor: Color = Green
+    var contentColor: Color = Color.White
 
     if (containerColorName == "white-green")
     {
-        containerColor = 0xFFFFFFFF
-        contentColor = 0xFF16A637
+        containerColor = Yellow
+        contentColor = Green
     }
     else if (containerColorName == "yellow-green")
     {
-        containerColor = 0xFFFFD600
-        contentColor = 0xFF16A637
+        containerColor = Yellow
+        contentColor = Green
     } else if (containerColorName == "white-black")
     {
-        containerColor = 0xFFFFFFFF
-        contentColor = 0xFF000000
+        containerColor = Color.White
+        contentColor = Color.Black
     }
 
     Button(
@@ -44,8 +46,8 @@ fun LongButton(modifier: Modifier = Modifier, onClick: () -> Unit, containerColo
             .border(border, RoundedCornerShape(20)),
         onClick = {} ,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(containerColor),
-            contentColor = Color(contentColor)
+            containerColor = containerColor,
+            contentColor = contentColor
         ),
         shape = RoundedCornerShape(20),
         contentPadding = contentPadding,

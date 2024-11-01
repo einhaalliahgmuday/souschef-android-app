@@ -2,7 +2,6 @@ package com.samsantech.souschef.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samsantech.souschef.R
-import com.samsantech.souschef.ui.components.LongButton
+import com.samsantech.souschef.ui.components.ColoredButton
 import com.samsantech.souschef.ui.components.SelectionCard
 import com.samsantech.souschef.ui.components.SkipButton
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
@@ -82,7 +81,7 @@ fun SelectSkillLevelScreen() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                LongButton(
+                ColoredButton(
                     onClick = {  },
                     text = "Previous",
                     modifier = Modifier.width(160.dp),
@@ -90,7 +89,7 @@ fun SelectSkillLevelScreen() {
                     containerColorName = "white-black",
                     border = BorderStroke(1.dp, Color.Black)
                 )
-                LongButton(
+                ColoredButton(
                     onClick = {  },
                     text = "Complete",
                     modifier = Modifier.width(160.dp),
@@ -137,7 +136,7 @@ fun SignUpSuccessfulPopUp() {
                 text = "Your account has been created."
             )
             Spacer(modifier = Modifier.height(20.dp))
-            LongButton(onClick = {  }, text = "Sign in")
+            ColoredButton(onClick = {  }, text = "Sign in")
         }
     }
 }

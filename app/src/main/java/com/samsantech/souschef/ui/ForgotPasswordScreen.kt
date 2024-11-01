@@ -24,7 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samsantech.souschef.ui.components.FormOutlinedTextField
-import com.samsantech.souschef.ui.components.LongButton
+import com.samsantech.souschef.ui.components.ColoredButton
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 
 @Composable
@@ -66,7 +66,7 @@ fun ForgotPasswordScreen() {
                 },
             )
             Spacer(modifier = Modifier.height(20.dp))
-            LongButton(
+            ColoredButton(
                 onClick = {  },
                 text = "Send Code"
             )
@@ -81,7 +81,7 @@ fun ForgotPasswordScreen() {
                 fontStyle = FontStyle.Italic
             )
             Spacer(modifier = Modifier.height(16.dp))
-            LongButton(
+            ColoredButton(
                 onClick = {  },
                 containerColorName = "white-green",
                 text = "Login",

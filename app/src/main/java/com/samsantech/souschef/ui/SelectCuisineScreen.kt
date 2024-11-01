@@ -12,10 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samsantech.souschef.ui.components.FormTextField
-import com.samsantech.souschef.ui.components.LongButton
+import com.samsantech.souschef.ui.components.ColoredButton
 import com.samsantech.souschef.ui.components.SelectionCard
 import com.samsantech.souschef.ui.components.SkipButton
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
@@ -70,10 +71,10 @@ fun SelectCuisineScreen() {
                 clickable = {  }
             )
 
-            FormTextField(value = "HAHA", onValueChange = {})
+            FormTextField(value = "HAHA", onValueChange = {}, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
         }
 
-        LongButton(
+        ColoredButton(
             onClick = {  },
             text = "Login"
         )

@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samsantech.souschef.R
 import com.samsantech.souschef.ui.components.FormOutlinedTextField
-import com.samsantech.souschef.ui.components.LongButton
+import com.samsantech.souschef.ui.components.ColoredButton
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 
 @Composable
@@ -70,7 +70,7 @@ fun ResetPasswordScreen() {
             }
         )
         Spacer(modifier = Modifier.height(20.dp))
-        LongButton(
+        ColoredButton(
             onClick = {  },
             text = "Confirm"
         )

@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.samsantech.souschef.ui.components.LongButton
+import com.samsantech.souschef.ui.components.ColoredButton
 import com.samsantech.souschef.ui.components.SelectionCard
 import com.samsantech.souschef.ui.components.SkipButton
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
@@ -88,7 +88,7 @@ fun SelectDislikesScreen() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            LongButton(
+            ColoredButton(
                 onClick = {  },
                 text = "Previous",
                 modifier = Modifier.width(160.dp),
@@ -96,7 +96,7 @@ fun SelectDislikesScreen() {
                 containerColorName = "white-black",
                 border = BorderStroke(1.dp, Color.Black)
             )
-            LongButton(
+            ColoredButton(
                 onClick = {  },
                 text = "Next Step",
                 modifier = Modifier.width(160.dp),

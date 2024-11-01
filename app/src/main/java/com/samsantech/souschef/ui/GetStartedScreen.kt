@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.samsantech.souschef.R
-import com.samsantech.souschef.ui.components.LongButton
+import com.samsantech.souschef.ui.components.ColoredButton
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 
 @Composable
@@ -88,7 +88,7 @@ fun GetStartedScreen() {
                     )
                 )
             }
-            LongButton(
+            ColoredButton(
                 onClick = {},
                 text = "Start"
             )

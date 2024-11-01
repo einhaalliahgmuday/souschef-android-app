@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samsantech.souschef.R
 import com.samsantech.souschef.ui.components.FormOutlinedTextField
-import com.samsantech.souschef.ui.components.LongButton
+import com.samsantech.souschef.ui.components.ColoredButton
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 
 @Composable
@@ -99,7 +99,7 @@ fun SignUpScreen() {
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            LongButton(
+            ColoredButton(
                 onClick = {  },
                 text = "Continue"
             )
@@ -114,7 +114,7 @@ fun SignUpScreen() {
                 fontStyle = FontStyle.Italic
             )
             Spacer(modifier = Modifier.height(16.dp))
-            LongButton(
+            ColoredButton(
                 onClick = {  },
                 containerColorName = "white-green",
                 text = "Login",
