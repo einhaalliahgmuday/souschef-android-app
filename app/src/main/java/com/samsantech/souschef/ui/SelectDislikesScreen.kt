@@ -1,12 +1,16 @@
 package com.samsantech.souschef.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,14 +18,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.samsantech.souschef.ui.components.FormTextField
 import com.samsantech.souschef.ui.components.LongButton
 import com.samsantech.souschef.ui.components.SelectionCard
 import com.samsantech.souschef.ui.components.SkipButton
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 
 @Composable
-fun SelectCuisineScreen() {
+fun SelectDislikesScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -34,7 +37,7 @@ fun SelectCuisineScreen() {
             SkipButton(onClick = {})
 
             Text(
-                text = "Type of cuisines you're most interested with?",
+                text = "Do you have any allergies or dislikes?",
                 color = Color(0xFF16A637),
                 fontSize = 20.sp,
                 fontFamily = Konkhmer_Sleokcher,
@@ -46,36 +49,59 @@ fun SelectCuisineScreen() {
             Spacer(modifier = Modifier.height(12.dp))
 
             SelectionCard(
-                text = "Filipino",
+                text = "Shrimp",
                 clickable = {  }
             )
             Spacer(modifier = Modifier.height(10.dp))
             SelectionCard(
-                text = "Korean",
+                text = "Garlic",
                 clickable = {  }
             )
             Spacer(modifier = Modifier.height(10.dp))
             SelectionCard(
-                text = "Italian",
+                text = "Pepper",
                 clickable = {  }
             )
             Spacer(modifier = Modifier.height(10.dp))
             SelectionCard(
-                text = "American",
+                text = "Chili",
                 clickable = {  }
             )
             Spacer(modifier = Modifier.height(10.dp))
             SelectionCard(
-                text = "Others (Please specify)",
+                text = "Milk",
                 clickable = {  }
             )
-
-            FormTextField(value = "HAHA", onValueChange = {})
+            Spacer(modifier = Modifier.height(10.dp))
+            SelectionCard(
+                text = "Cheese",
+                clickable = {  }
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            SelectionCard(
+                text = "Ketchup",
+                clickable = {  }
+            )
         }
 
-        LongButton(
-            onClick = {  },
-            text = "Login"
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            LongButton(
+                onClick = {  },
+                text = "Previous",
+                modifier = Modifier.width(160.dp),
+                contentPadding = PaddingValues(12.dp, 12.dp),
+                containerColorName = "white-black",
+                border = BorderStroke(1.dp, Color.Black)
+            )
+            LongButton(
+                onClick = {  },
+                text = "Next Step",
+                modifier = Modifier.width(160.dp),
+                contentPadding = PaddingValues(12.dp, 12.dp),
+            )
+        }
     }
 }

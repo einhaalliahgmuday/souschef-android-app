@@ -21,7 +21,7 @@ fun RegisterOrLoginScreen() {
         modifier = Modifier
             .fillMaxSize()
             .background(Color(22, 166, 55, 255))
-            .padding(top = 130.dp, bottom = 80.dp, start = 32.dp, end = 32.dp),
+            .padding(top = 130.dp, bottom = 70.dp, start = 32.dp, end = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -30,7 +30,7 @@ fun RegisterOrLoginScreen() {
         Column {
             LongButton(
                 onClick = {  },
-                containerColorName = "white",
+                containerColorName = "white-green",
                 text = "Login"
             )
 
@@ -38,7 +38,7 @@ fun RegisterOrLoginScreen() {
             
             LongButton(
                 onClick = {  },
-                containerColorName = "yellow",
+                containerColorName = "yellow-green",
                 text = "Sign up",
             )
         }
