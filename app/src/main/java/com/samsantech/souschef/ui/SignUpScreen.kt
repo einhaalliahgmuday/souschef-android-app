@@ -16,6 +16,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,9 +34,13 @@ import com.samsantech.souschef.ui.components.FormOutlinedTextField
 import com.samsantech.souschef.ui.components.ColoredButton
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
+import com.samsantech.souschef.viewmodel.AuthViewModel
 
 @Composable
-fun SignUpScreen() {
+fun SignUpScreen(
+    onNavigateToLogin: () -> Unit,
+    authViewModel: AuthViewModel
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -57,9 +65,23 @@ fun SignUpScreen() {
                 )
             )
 
+            var username by remember {
+                mutableStateOf("")
+            }
+
+            var email by remember {
+                mutableStateOf("")
+            }
+
+            var password by remember {
+                mutableStateOf("")
+            }
+
             FormOutlinedTextField(
-                value = "Hello",
-                onValueChange = {},
+                value = username,
+                onValueChange = {
+                                username = it
+                },
                 label = "Username",
                 leadingIcon = {
                     Icon(
@@ -70,8 +92,10 @@ fun SignUpScreen() {
             )
             Spacer(modifier = Modifier.height(8.dp))
             FormOutlinedTextField(
-                value = "oka",
-                onValueChange = {},
+                value = email,
+                onValueChange = {
+                                email = it
+                },
                 label = "Email",
                 leadingIcon = {
                     Icon(
@@ -83,8 +107,10 @@ fun SignUpScreen() {
             Spacer(modifier = Modifier.height(8.dp))
             FormOutlinedTextField(
                 isPassword = true,
-                value = "AHAHHAHA",
-                onValueChange = {},
+                value = password,
+                onValueChange = {
+                                password = it
+                },
                 label = "Password",
                 leadingIcon = {
                     Icon(
@@ -101,7 +127,9 @@ fun SignUpScreen() {
             )
             Spacer(modifier = Modifier.height(16.dp))
             ColoredButton(
-                onClick = {  },
+                onClick = {
+                    authViewModel.signUp(username, email, password)
+                },
                 text = "Continue"
             )
         }
@@ -116,7 +144,7 @@ fun SignUpScreen() {
             )
             Spacer(modifier = Modifier.height(16.dp))
             ColoredButton(
-                onClick = {  },
+                onClick = onNavigateToLogin,
                 containerColor = Color.White, contentColor = Green,
                 text = "Login",
                 border = BorderStroke(1.dp, Color.Black)
