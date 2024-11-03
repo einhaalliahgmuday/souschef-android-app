@@ -1,5 +1,7 @@
 package com.samsantech.souschef.ui
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,10 +30,10 @@ import com.samsantech.souschef.ui.components.ColoredButton
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 
 @Composable
-fun GetStartedScreen() {
-//    BackHandler {
-//        activity.finish()
-//    }
+fun GetStartedScreen(activity: ComponentActivity, onNavigateToSignUpOrLogin: () -> Unit) {
+    BackHandler {
+        activity.finish()
+    }
 
     Box(
         modifier = Modifier
@@ -89,7 +91,7 @@ fun GetStartedScreen() {
                 )
             }
             ColoredButton(
-                onClick = {},
+                onClick = onNavigateToSignUpOrLogin,
                 text = "Start"
             )
         }

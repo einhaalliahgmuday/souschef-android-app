@@ -10,10 +10,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.samsantech.souschef.ui.components.LogoWithText
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 @Composable
-fun OpeningScreen() {
+fun OpeningScreen(onNavigateToGetStarted: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -25,9 +27,10 @@ fun OpeningScreen() {
     }
 
     LaunchedEffect(key1 = Unit) {
-        delay(5000)
-//        withContext(Dispatchers.Main) {
-//            onNavigateToStart()
-//        }
+        delay(4000)
+
+        withContext(Dispatchers.Main) {
+            onNavigateToGetStarted()
+        }
     }
 }

@@ -18,7 +18,10 @@ import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Yellow
 
 @Composable
-fun SignUpOrLoginScreen() {
+fun SignUpOrLoginScreen(
+    onNavigateToSignUp: () -> Unit,
+    onNavigateToLogin: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -31,7 +34,7 @@ fun SignUpOrLoginScreen() {
 
         Column {
             ColoredButton(
-                onClick = {  },
+                onClick = onNavigateToLogin,
                 containerColor = Color.White, contentColor = Green,
                 text = "Login"
             )
@@ -39,7 +42,7 @@ fun SignUpOrLoginScreen() {
             Spacer(modifier = Modifier.height(16.dp))
             
             ColoredButton(
-                onClick = {  },
+                onClick = onNavigateToSignUp,
                 containerColor = Yellow, contentColor = Green,
                 text = "Sign up",
             )

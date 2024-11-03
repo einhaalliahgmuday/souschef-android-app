@@ -3,19 +3,16 @@ package com.samsantech.souschef.ui
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
@@ -36,7 +33,11 @@ import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    onNavigateToSignUp: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit,
+    onNavigateToHome: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -92,25 +93,18 @@ fun LoginScreen() {
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+            Box(
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                Row {
-                    Checkbox(
-                        checked = false,
-                        onCheckedChange = {  },
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Remember me", fontSize = 12.sp,)
-                }
                 Text(
                     text = "Forgot Password?",
                     color = Color.Red,
                     fontSize = 12.sp,
                     modifier = Modifier
-                        .clickable { }
+                        .clickable (
+                            onClick = onNavigateToForgotPassword
+                        )
+                        .align(Alignment.CenterEnd)
                 )
             }
             Spacer(modifier = Modifier.height(20.dp))
@@ -130,7 +124,7 @@ fun LoginScreen() {
             )
             Spacer(modifier = Modifier.height(16.dp))
             ColoredButton(
-                onClick = {  },
+                onClick = onNavigateToSignUp,
                 containerColor = Color.White, contentColor = Green,
                 text = "Sign Up",
                 border = BorderStroke(1.dp, Color.Black)

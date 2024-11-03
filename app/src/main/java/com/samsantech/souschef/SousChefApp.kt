@@ -1,5 +1,6 @@
 package com.samsantech.souschef
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
@@ -24,25 +25,55 @@ import com.samsantech.souschef.ui.SelectDislikesScreen
 import com.samsantech.souschef.ui.SelectSkillLevelScreen
 import com.samsantech.souschef.ui.SignUpOrLoginScreen
 import com.samsantech.souschef.ui.SignUpScreen
+import com.samsantech.souschef.viewmodel.AuthViewModel
 import kotlinx.serialization.Serializable
 
 @Composable
-fun SousChefApp() {
+fun SousChefApp(
+    activity: ComponentActivity,
+    authViewModel: AuthViewModel
+) {
     Box {
         val navController = rememberNavController()
 
-        NavHost(navController = navController, startDestination = Opening) {
+        NavHost(navController = navController, startDestination = Login) {
             composable<Opening> {
-                OpeningScreen()
+                OpeningScreen(
+                    onNavigateToGetStarted = { navController.navigate(route = GetStarted) }
+                )
             }
             composable<GetStarted> {
-                GetStartedScreen()
+                GetStartedScreen(
+                    activity,
+                    onNavigateToSignUpOrLogin = { navController.navigate(route = SignUpOrLogin) }
+                )
             }
             composable<SignUpOrLogin> {
-                SignUpOrLoginScreen()
+                SignUpOrLoginScreen(
+                    onNavigateToLogin = { navController.navigate(route = Login) },
+                    onNavigateToSignUp = { navController.navigate(route = SignUp) }
+                )
+            }
+            composable<Login> {
+                LoginScreen(
+                    onNavigateToSignUp = { navController.navigate(route = SignUp) },
+                    onNavigateToForgotPassword = { navController.navigate(route = ForgotPassword) },
+                    onNavigateToHome = { navController.navigate(route = Home) }
+                )
+            }
+            composable<ForgotPassword> {
+                ForgotPasswordScreen(
+                    onNavigateToLogin = { navController.navigate(route = Login) }
+                )
+            }
+            composable<ResetPassword> {
+                ResetPasswordScreen()
             }
             composable<SignUp> {
-                SignUpScreen()
+                SignUpScreen(
+                    onNavigateToLogin = { navController.navigate(route = Login) },
+                    authViewModel = authViewModel
+                )
             }
             composable<SelectCuisine> {
                 SelectCuisineScreen()
@@ -52,15 +83,6 @@ fun SousChefApp() {
             }
             composable<SelectSkillLevel> {
                 SelectSkillLevelScreen()
-            }
-            composable<Login> {
-                LoginScreen()
-            }
-            composable<ForgotPassword> {
-                ForgotPasswordScreen()
-            }
-            composable<ResetPassword> {
-                ResetPasswordScreen()
             }
             composable<EditProfile> {
                 EditProfileScreen()

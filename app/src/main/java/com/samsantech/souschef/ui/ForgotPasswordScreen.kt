@@ -29,7 +29,9 @@ import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 
 @Composable
-fun ForgotPasswordScreen() {
+fun ForgotPasswordScreen(
+    onNavigateToLogin: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -83,7 +85,7 @@ fun ForgotPasswordScreen() {
             )
             Spacer(modifier = Modifier.height(16.dp))
             ColoredButton(
-                onClick = {  },
+                onClick = onNavigateToLogin,
                 containerColor = Color.White, contentColor = Green,
                 text = "Login",
                 border = BorderStroke(1.dp, Color.Black)
