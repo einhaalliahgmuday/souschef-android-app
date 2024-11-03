@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import com.samsantech.souschef.R
 import com.samsantech.souschef.ui.components.Header
 import com.samsantech.souschef.ui.components.ColoredButton
+import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 
 @Composable
@@ -106,15 +108,16 @@ fun ProfileScreen() {
                 ColoredButton(
                     onClick = {  },
                     text = "Your Recipes",
-                    modifier = Modifier.fillMaxWidth(.48f),
+                    modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(12.dp, 12.dp),
-                    containerColorName = "white-green",
+                    containerColor = Color.White, contentColor = Green,
                     border = BorderStroke(1.dp, Color(0xFF16A637))
                 )
+                Spacer(modifier = Modifier.width(12.dp))
                 ColoredButton(
                     onClick = {  },
                     text = "Favorites",
-                    modifier = Modifier.fillMaxWidth(.96078f),
+                    modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(12.dp, 12.dp),
                 )
             }

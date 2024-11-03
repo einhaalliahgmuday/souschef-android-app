@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import com.samsantech.souschef.ui.components.ColoredButton
 import com.samsantech.souschef.ui.components.SelectionCard
 import com.samsantech.souschef.ui.components.SkipButton
+import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 
 @Composable
@@ -91,15 +92,16 @@ fun SelectDislikesScreen() {
             ColoredButton(
                 onClick = {  },
                 text = "Previous",
-                modifier = Modifier.width(160.dp),
+                modifier = Modifier.weight(1f),
                 contentPadding = PaddingValues(12.dp, 12.dp),
-                containerColorName = "white-black",
+                containerColor = Color.White, contentColor = Color.Black,
                 border = BorderStroke(1.dp, Color.Black)
             )
+            Spacer(modifier = Modifier.width(12.dp))
             ColoredButton(
                 onClick = {  },
                 text = "Next Step",
-                modifier = Modifier.width(160.dp),
+                modifier = Modifier.weight(1f),
                 contentPadding = PaddingValues(12.dp, 12.dp),
             )
         }

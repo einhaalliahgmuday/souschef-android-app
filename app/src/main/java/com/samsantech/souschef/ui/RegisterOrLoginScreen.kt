@@ -14,6 +14,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.samsantech.souschef.ui.components.LogoWithText
 import com.samsantech.souschef.ui.components.ColoredButton
+import com.samsantech.souschef.ui.theme.Green
+import com.samsantech.souschef.ui.theme.Yellow
 
 @Composable
 fun RegisterOrLoginScreen() {
@@ -30,7 +32,7 @@ fun RegisterOrLoginScreen() {
         Column {
             ColoredButton(
                 onClick = {  },
-                containerColorName = "white-green",
+                containerColor = Color.White, contentColor = Green,
                 text = "Login"
             )
 
@@ -38,7 +40,7 @@ fun RegisterOrLoginScreen() {
             
             ColoredButton(
                 onClick = {  },
-                containerColorName = "yellow-green",
+                containerColor = Yellow, contentColor = Green,
                 text = "Sign up",
             )
         }

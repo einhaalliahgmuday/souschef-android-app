@@ -4,7 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.samsantech.souschef.ui.CreateRecipeScreen
+import com.samsantech.souschef.ui.CreateRecipeScreenOne
+import com.samsantech.souschef.ui.CreateRecipeScreenThree
+import com.samsantech.souschef.ui.CreateRecipeScreenTwo
+import com.samsantech.souschef.ui.OpeningScreen
 import com.samsantech.souschef.ui.theme.SousChefTheme
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +16,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SousChefTheme {
-//                OpeningScreen();
+                OpeningScreen();
 //                GetStartedScreen();
 //                RegisterOrLoginScreen()
 //                SignUpScreen()
@@ -25,9 +28,10 @@ class MainActivity : ComponentActivity() {
 //                ResetPasswordScreen()
 //                HomeScreen()
 //                ProfileScreen()
-//                Header()
 //                CategoriesScreen()
-                CreateRecipeScreen()
+//                CreateRecipeScreenOne()
+//                CreateRecipeScreenTwo()
+//                CreateRecipeScreenThree()
             }
         }
     }

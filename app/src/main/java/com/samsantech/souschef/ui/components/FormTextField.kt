@@ -12,10 +12,9 @@ import androidx.compose.ui.text.style.TextAlign
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FormTextField(value: String, onValueChange: (String) -> Unit,
+fun FormTextField(modifier: Modifier = Modifier, value: String, onValueChange: (String) -> Unit,
                   label: @Composable() (() -> Unit)? = null,
                   textAlign: TextAlign = TextAlign.Start,
-                  modifier: Modifier = Modifier,
                   maxLines: Int = Int.MAX_VALUE) {
     TextField(
         value = value,

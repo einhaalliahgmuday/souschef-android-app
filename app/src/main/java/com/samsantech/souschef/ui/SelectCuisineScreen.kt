@@ -76,7 +76,7 @@ fun SelectCuisineScreen() {
 
         ColoredButton(
             onClick = {  },
-            text = "Login"
+            text = "Continue"
         )
     }
 }

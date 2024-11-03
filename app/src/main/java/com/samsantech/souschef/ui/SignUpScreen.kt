@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.samsantech.souschef.R
 import com.samsantech.souschef.ui.components.FormOutlinedTextField
 import com.samsantech.souschef.ui.components.ColoredButton
+import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 
 @Composable
@@ -116,7 +117,7 @@ fun SignUpScreen() {
             Spacer(modifier = Modifier.height(16.dp))
             ColoredButton(
                 onClick = {  },
-                containerColorName = "white-green",
+                containerColor = Color.White, contentColor = Green,
                 text = "Login",
                 border = BorderStroke(1.dp, Color.Black)
             )
