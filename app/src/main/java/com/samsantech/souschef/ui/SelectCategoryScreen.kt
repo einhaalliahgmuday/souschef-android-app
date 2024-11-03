@@ -27,7 +27,7 @@ import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 
 @Composable
-fun CategoriesScreen() {
+fun SelectCategoryScreen() {
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())

@@ -18,7 +18,7 @@ import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Yellow
 
 @Composable
-fun RegisterOrLoginScreen() {
+fun SignUpOrLoginScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
