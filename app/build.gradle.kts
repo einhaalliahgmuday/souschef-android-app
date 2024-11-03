@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -69,4 +70,5 @@ dependencies {
 
     implementation("androidx.compose.material:material:1.7.5")
     implementation("androidx.navigation:navigation-compose:2.8.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 }
