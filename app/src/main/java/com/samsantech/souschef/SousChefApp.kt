@@ -20,7 +20,7 @@ import com.samsantech.souschef.ui.RecipeBrowserScreen
 import com.samsantech.souschef.ui.RecipeScreen
 import com.samsantech.souschef.ui.ResetPasswordScreen
 import com.samsantech.souschef.ui.SelectCategoryScreen
-import com.samsantech.souschef.ui.SelectCuisineScreen
+import com.samsantech.souschef.ui.SelectCuisinesScreen
 import com.samsantech.souschef.ui.SelectDislikesScreen
 import com.samsantech.souschef.ui.SelectSkillLevelScreen
 import com.samsantech.souschef.ui.SignUpOrLoginScreen
@@ -36,7 +36,7 @@ fun SousChefApp(
     Box {
         val navController = rememberNavController()
 
-        NavHost(navController = navController, startDestination = Login) {
+        NavHost(navController = navController, startDestination = SelectCuisines) {
             composable<Opening> {
                 OpeningScreen(
                     onNavigateToGetStarted = { navController.navigate(route = GetStarted) }
@@ -71,18 +71,26 @@ fun SousChefApp(
             }
             composable<SignUp> {
                 SignUpScreen(
+                    authViewModel = authViewModel,
+                    onNavigateToSelectCuisines = { navController.navigate(route = SelectCuisines) },
                     onNavigateToLogin = { navController.navigate(route = Login) },
+                )
+            }
+            composable<SelectCuisines> {
+                SelectCuisinesScreen(
+                    authViewModel = authViewModel,
+                    onNavigateToSelectDislikes = { navController.navigate(route = SelectDislikes) },
+                )
+            }
+            composable<SelectDislikes> {
+                SelectDislikesScreen(
                     authViewModel = authViewModel
                 )
             }
-            composable<SelectCuisine> {
-                SelectCuisineScreen()
-            }
-            composable<SelectDislikes> {
-                SelectDislikesScreen()
-            }
             composable<SelectSkillLevel> {
-                SelectSkillLevelScreen()
+                SelectSkillLevelScreen(
+                    authViewModel = authViewModel
+                )
             }
             composable<EditProfile> {
                 EditProfileScreen()
@@ -128,7 +136,7 @@ object SignUpOrLogin
 object SignUp
 
 @Serializable
-object SelectCuisine
+object SelectCuisines
 
 @Serializable
 object SelectDislikes

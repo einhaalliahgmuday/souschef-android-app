@@ -16,10 +16,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,9 +36,12 @@ import com.samsantech.souschef.viewmodel.AuthViewModel
 
 @Composable
 fun SignUpScreen(
-    onNavigateToLogin: () -> Unit,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    onNavigateToSelectCuisines: () -> Unit,
+    onNavigateToLogin: () -> Unit
 ) {
+    val signUpInformation by authViewModel.signUpInformation.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -65,22 +66,10 @@ fun SignUpScreen(
                 )
             )
 
-            var username by remember {
-                mutableStateOf("")
-            }
-
-            var email by remember {
-                mutableStateOf("")
-            }
-
-            var password by remember {
-                mutableStateOf("")
-            }
-
             FormOutlinedTextField(
-                value = username,
+                value = signUpInformation.username,
                 onValueChange = {
-                                username = it
+                                authViewModel.setSignUpInformation(username = it)
                 },
                 label = "Username",
                 leadingIcon = {
@@ -92,9 +81,9 @@ fun SignUpScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
             FormOutlinedTextField(
-                value = email,
+                value = signUpInformation.email,
                 onValueChange = {
-                                email = it
+                    authViewModel.setSignUpInformation(email = it)
                 },
                 label = "Email",
                 leadingIcon = {
@@ -107,9 +96,9 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.height(8.dp))
             FormOutlinedTextField(
                 isPassword = true,
-                value = password,
+                value = signUpInformation.password,
                 onValueChange = {
-                                password = it
+                    authViewModel.setSignUpInformation(password = it)
                 },
                 label = "Password",
                 leadingIcon = {
@@ -127,9 +116,7 @@ fun SignUpScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
             ColoredButton(
-                onClick = {
-                    authViewModel.signUp(username, email, password)
-                },
+                onClick = onNavigateToSelectCuisines,
                 text = "Continue"
             )
         }

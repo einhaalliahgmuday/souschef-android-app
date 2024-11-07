@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
+import com.google.firebase.storage.storage
 import com.samsantech.souschef.firebase.FirebaseAuthManager
 import com.samsantech.souschef.firebase.FirebaseUserManager
 import com.samsantech.souschef.ui.theme.SousChefTheme
@@ -18,11 +19,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SousChefTheme {
-                val db = Firebase.firestore
                 val auth = Firebase.auth
+                val db = Firebase.firestore
+                val storage = Firebase.storage
 
-                val firebaseUserManager = FirebaseUserManager(db)
+                val firebaseUserManager = FirebaseUserManager(db, storage)
                 val firebaseAuthManager = FirebaseAuthManager(auth, firebaseUserManager)
+
+                val user = firebaseAuthManager.getCurrentUser()
 
                 val authViewModel = AuthViewModel(firebaseAuthManager, firebaseUserManager)
 

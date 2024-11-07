@@ -1,11 +1,9 @@
 package com.samsantech.souschef.firebase
 
-import android.content.Context
-import androidx.activity.ComponentActivity
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.auth
+import com.samsantech.souschef.data.User
+import com.samsantech.souschef.data.UserPreferences
 
 class FirebaseAuthManager(
     private val auth: FirebaseAuth,
@@ -15,10 +13,14 @@ class FirebaseAuthManager(
         return auth.currentUser
     }
 
-    fun createNewUser(username: String, email: String, password: String) {
-        auth.createUserWithEmailAndPassword(email, password)
+    fun createNewUser(user: User, preferences: UserPreferences) {
+        auth.createUserWithEmailAndPassword(user.email, user.password)
             .addOnSuccessListener {
-                firebaseUserManager.createUser(email, username)
+                val signedUpUser = getCurrentUser()
+                if (signedUpUser != null) {
+                    firebaseUserManager.createUser(signedUpUser.uid, user.username)
+                    firebaseUserManager.createUserPreferences(signedUpUser.uid, preferences)
+                }
             }
     }
 
