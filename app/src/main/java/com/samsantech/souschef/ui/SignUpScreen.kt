@@ -4,7 +4,6 @@ import android.util.Patterns
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.PlatformTextStyle
@@ -51,6 +49,9 @@ fun SignUpScreen(
 ) {
     val signUpInformation by authViewModel.signUpInformation.collectAsState()
     var signUpStatus by remember {
+        mutableStateOf("")
+    }
+    var errorDisplayName by remember {
         mutableStateOf("")
     }
     var errorUsername by remember {
@@ -87,6 +88,24 @@ fun SignUpScreen(
                 )
             )
 
+            FormOutlinedTextField(
+                value = signUpInformation.displayName,
+                onValueChange = { valueChange ->
+                    errorDisplayName = ""
+                    authViewModel.setSignUpInformation(displayName = valueChange)
+                },
+                label = "Name",
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Person,
+                        contentDescription = "person icon"
+                    )
+                },
+            )
+            if (errorDisplayName.isNotBlank()) {
+                Text(text = errorDisplayName, fontSize = 14.sp, color = Color.Red, modifier = Modifier.fillMaxWidth())
+            }
+            Spacer(modifier = Modifier.height(8.dp))
             FormOutlinedTextField(
                 value = signUpInformation.username,
                 onValueChange = { valueChange ->
@@ -160,7 +179,7 @@ fun SignUpScreen(
                     Icon(
                         painter = if (!isPasswordVisualTransformation) { painterResource(id = R.drawable.visibility_vector) }
                                     else { painterResource(id = R.drawable.visibility_off_vector) },
-                        contentDescription = "visibility icon",
+                        contentDescription = null,
                         modifier = Modifier
                             .clickable {
                                 isPasswordVisualTransformation = !isPasswordVisualTransformation
@@ -175,10 +194,14 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.height(16.dp))
             ColoredButton(
                 onClick = {
+                    val displayName = signUpInformation.displayName
                     val username = signUpInformation.username
                     val email = signUpInformation.email
                     val password = signUpInformation.password
 
+                    if (displayName.isEmpty()) {
+                        errorDisplayName = "Name is required."
+                    }
                     if (username.isEmpty()) {
                         errorUsername = "Username is required."
                     } else {

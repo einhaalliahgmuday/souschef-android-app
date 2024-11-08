@@ -1,8 +1,12 @@
 package com.samsantech.souschef.data
 
+import com.google.firebase.firestore.PropertyName
+
 data class User(
-    val username: String = "",
-    val email: String = "",
-    val photo: String? = null,
-    val password: String = ""
+    var uid: String = "",
+    var displayName: String = "",
+    var username: String = "",
+    var email: String = "",
+    var photo: String? = null,
+    var password: String = ""
 )

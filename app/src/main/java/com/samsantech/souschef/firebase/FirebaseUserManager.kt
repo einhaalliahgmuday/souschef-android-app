@@ -3,17 +3,19 @@ package com.samsantech.souschef.firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.samsantech.souschef.data.User
 import com.samsantech.souschef.data.UserPreferences
 
 class FirebaseUserManager(private val auth: FirebaseAuth, private val db: FirebaseFirestore, private val storage: FirebaseStorage) {
-    fun createUser(uid: String, username: String, isSuccess: (Boolean) -> Unit) {
+    fun createUser(uid: String, displayName: String, username: String, isSuccess: (Boolean) -> Unit) {
         val user = hashMapOf(
-            "uid" to uid,
+            "displayName" to displayName,
             "username" to username
         )
 
         db.collection("users")
-            .add(user)
+            .document(uid)
+            .set(user)
             .addOnSuccessListener {
                 isSuccess(true)
             }
@@ -54,6 +56,21 @@ class FirebaseUserManager(private val auth: FirebaseAuth, private val db: Fireba
             .get()
             .addOnSuccessListener {
                 isExists(!it.isEmpty)
+            }
+    }
+
+    fun getUser(uid: String, callback: (User?) -> Unit) {
+        db.collection("users")
+            .document(uid)
+            .get()
+            .addOnSuccessListener {
+                print("success")
+                val user = it.toObject(User::class.java)
+                if (user != null) {
+                    callback(user)
+                } else {
+                    callback(null)
+                }
             }
     }
 }

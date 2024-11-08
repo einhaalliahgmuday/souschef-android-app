@@ -12,6 +12,7 @@ import com.samsantech.souschef.firebase.FirebaseAuthManager
 import com.samsantech.souschef.firebase.FirebaseUserManager
 import com.samsantech.souschef.ui.theme.SousChefTheme
 import com.samsantech.souschef.viewmodel.AuthViewModel
+import com.samsantech.souschef.viewmodel.UserViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,10 +30,13 @@ class MainActivity : ComponentActivity() {
                 val user = firebaseAuthManager.getCurrentUser()
 
                 val authViewModel = AuthViewModel(firebaseAuthManager, firebaseUserManager)
+                val userViewModel = UserViewModel(firebaseUserManager)
 
                 SousChefApp(
+                    user,
                     activity = this,
-                    authViewModel
+                    authViewModel,
+                    userViewModel
                 )
             }
         }

@@ -3,7 +3,6 @@ package com.samsantech.souschef.firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.samsantech.souschef.data.User
-import com.samsantech.souschef.data.UserPreferences
 
 class FirebaseAuthManager(
     private val auth: FirebaseAuth,
@@ -18,14 +17,22 @@ class FirebaseAuthManager(
             .addOnSuccessListener {
                 val signedUpUser = getCurrentUser()
                 if (signedUpUser != null) {
-                    firebaseUserManager.createUser(signedUpUser.uid, user.username) {
+                    firebaseUserManager.createUser(signedUpUser.uid, user.displayName, user.username, ) {
                         isSuccess(true)
                     }
                 }
             }
     }
 
-    fun login(email: String, password: String) {
+    fun login(email: String, password: String, onComplete: (Boolean, String?) -> Unit) {
         auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    onComplete(true, null)
+                } else {
+                    val exception = task.exception
+                    onComplete(false, getErrorMessage(exception))
+                }
+            }
     }
 }

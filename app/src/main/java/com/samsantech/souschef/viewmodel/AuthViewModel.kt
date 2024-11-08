@@ -14,6 +14,12 @@ class AuthViewModel(
     val signUpPreferences = MutableStateFlow<UserPreferences>(UserPreferences())
     val otherCuisine = MutableStateFlow<String>("")
 
+    fun login(email: String, password: String, onComplete: (Boolean, String?) -> Unit) {
+        firebaseAuthManager.login(email, password) { isSuccess, error ->
+            onComplete(isSuccess, error)
+        }
+    }
+
     fun signUp(isSuccess: (Boolean) -> Unit) {
         firebaseAuthManager.signUp(signUpInformation.value) {
             isSuccess(it)
@@ -27,8 +33,9 @@ class AuthViewModel(
         }
     }
 
-    fun setSignUpInformation(username: String? = null, email: String? = null, password: String? = null) {
+    fun setSignUpInformation(displayName: String? = null, username: String? = null, email: String? = null, password: String? = null) {
         signUpInformation.value = User(
+            displayName = displayName?: signUpInformation.value.displayName,
             username = username?: signUpInformation.value.username,
             email = email?: signUpInformation.value.email,
             password = password?: signUpInformation.value.password
