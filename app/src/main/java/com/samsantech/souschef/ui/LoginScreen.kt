@@ -30,7 +30,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samsantech.souschef.R
-import com.samsantech.souschef.firebase.FirebaseAuthManager
 import com.samsantech.souschef.ui.components.FormOutlinedTextField
 import com.samsantech.souschef.ui.components.ColoredButton
 import com.samsantech.souschef.ui.components.ProgressSpinner
@@ -116,7 +115,7 @@ fun LoginScreen(
                     Icon(
                         painter = if (!isPasswordVisualTransformation) { painterResource(id = R.drawable.visibility_vector) }
                             else { painterResource(id = R.drawable.visibility_off_vector) },
-                        contentDescription = "email icon",
+                        contentDescription = null,
                         modifier = Modifier
                             .clickable {
                                 isPasswordVisualTransformation = !isPasswordVisualTransformation
