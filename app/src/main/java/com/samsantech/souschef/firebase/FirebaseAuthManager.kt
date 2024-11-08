@@ -1,5 +1,6 @@
 package com.samsantech.souschef.firebase
 
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.samsantech.souschef.data.User
@@ -34,5 +35,38 @@ class FirebaseAuthManager(
                     onComplete(false, getErrorMessage(exception))
                 }
             }
+    }
+
+    fun logout() {
+        auth.signOut()
+    }
+
+    fun changePassword(oldPassword: String, newPassword: String, callback: (Boolean, String?) -> Unit) {
+        val user = getCurrentUser()
+
+        if (user != null) {
+            val credential = user.email?.let {
+                EmailAuthProvider
+                    .getCredential(it, oldPassword)
+            }
+
+            if (credential != null) {
+                user.reauthenticate(credential)
+                    .addOnCompleteListener{ task ->
+                        if (!task.isSuccessful) {
+                            callback(false, getErrorMessage(task.exception))
+                        } else {
+                            user.updatePassword(newPassword)
+                                .addOnCompleteListener { updatePasswordTask ->
+                                    if (!updatePasswordTask.isSuccessful) {
+                                        callback(false, getErrorMessage(task.exception))
+                                    } else {
+                                        callback(true, null)
+                                    }
+                                }
+                        }
+                    }
+            }
+        }
     }
 }

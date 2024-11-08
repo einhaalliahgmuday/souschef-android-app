@@ -26,6 +26,12 @@ class AuthViewModel(
         }
     }
 
+    fun changePassword(oldPassword: String, newPassword: String, callback: (Boolean, String?) -> Unit) {
+        firebaseAuthManager.changePassword(oldPassword, newPassword) { isSuccess, error ->
+            callback(isSuccess, error)
+        }
+    }
+
     fun setUserPreferences(isSuccess: (Boolean) -> Unit) {
         signUpPreferences.value.cuisines = signUpPreferences.value.cuisines?.plus(otherCuisine.value)
         firebaseUserManager.createUserPreferences(signUpPreferences.value) {

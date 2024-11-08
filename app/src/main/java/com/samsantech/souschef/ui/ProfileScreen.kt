@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -27,6 +25,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,14 +40,30 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.auth.FirebaseUser
 import com.samsantech.souschef.R
 import com.samsantech.souschef.ui.components.Header
 import com.samsantech.souschef.ui.components.ColoredButton
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
+import com.samsantech.souschef.viewmodel.UserViewModel
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    userViewModel: UserViewModel,
+    user: FirebaseUser
+) {
+    var displayName by remember {
+        mutableStateOf("")
+    }
+    var username by remember {
+        mutableStateOf("")
+    }
+    userViewModel.getUser(user.uid) { returnedUser ->
+        displayName = returnedUser.displayName
+        username = returnedUser.username
+    }
+
     Column {
         Header()
         Column(
@@ -82,7 +100,7 @@ fun ProfileScreen() {
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Salma Fae Lumaoang",
+                text = displayName,
                 fontFamily = Konkhmer_Sleokcher,
                 fontSize = 20.sp,
                 color = Color(0xFF16A637),
@@ -95,7 +113,7 @@ fun ProfileScreen() {
                 )
             )
             Text(
-                text = "salmapeyy09gmail.com",
+                text = username,
                 fontStyle = FontStyle.Italic
             )
             Spacer(modifier = Modifier.height(12.dp))

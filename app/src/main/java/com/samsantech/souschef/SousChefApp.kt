@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseUser
 import com.samsantech.souschef.ui.CreateRecipeScreenOne
 import com.samsantech.souschef.ui.CreateRecipeScreenThree
 import com.samsantech.souschef.ui.CreateRecipeScreenTwo
@@ -18,7 +19,7 @@ import com.samsantech.souschef.ui.OpeningScreen
 import com.samsantech.souschef.ui.ProfileScreen
 import com.samsantech.souschef.ui.RecipeBrowserScreen
 import com.samsantech.souschef.ui.RecipeScreen
-import com.samsantech.souschef.ui.ResetPasswordScreen
+import com.samsantech.souschef.ui.ChangePasswordScreen
 import com.samsantech.souschef.ui.SelectCategoryScreen
 import com.samsantech.souschef.ui.SelectCuisinesScreen
 import com.samsantech.souschef.ui.SelectDislikesScreen
@@ -26,17 +27,20 @@ import com.samsantech.souschef.ui.SelectSkillLevelScreen
 import com.samsantech.souschef.ui.SignUpOrLoginScreen
 import com.samsantech.souschef.ui.SignUpScreen
 import com.samsantech.souschef.viewmodel.AuthViewModel
+import com.samsantech.souschef.viewmodel.UserViewModel
 import kotlinx.serialization.Serializable
 
 @Composable
 fun SousChefApp(
+    user: FirebaseUser?,
     activity: ComponentActivity,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    userViewModel: UserViewModel
 ) {
     Box {
         val navController = rememberNavController()
 
-        NavHost(navController = navController, startDestination = SignUp) {
+        NavHost(navController = navController, startDestination = ChangePassword) {
             composable<Opening> {
                 OpeningScreen(
                     onNavigateToGetStarted = { navController.navigate(route = GetStarted) }
@@ -56,6 +60,7 @@ fun SousChefApp(
             }
             composable<Login> {
                 LoginScreen(
+                    authViewModel,
                     onNavigateToSignUp = { navController.navigate(route = SignUp) },
                     onNavigateToForgotPassword = { navController.navigate(route = ForgotPassword) },
                     onNavigateToHome = { navController.navigate(route = Home) }
@@ -66,8 +71,11 @@ fun SousChefApp(
                     onNavigateToLogin = { navController.navigate(route = Login) }
                 )
             }
-            composable<ResetPassword> {
-                ResetPasswordScreen()
+            composable<ChangePassword> {
+                ChangePasswordScreen(
+                    authViewModel,
+                    onNavigateToProfile = { navController.navigate(route = Profile) }
+                )
             }
             composable<SignUp> {
                 SignUpScreen(
@@ -104,7 +112,11 @@ fun SousChefApp(
                 HomeScreen()
             }
             composable<Profile> {
-                ProfileScreen()
+                if (user != null) {
+                    ProfileScreen(userViewModel, user)
+                } else {
+                    navController.navigate(route = Login)
+                }
             }
             composable<SelectCategory> {
                 SelectCategoryScreen()
@@ -156,7 +168,7 @@ object Login
 object ForgotPassword
 
 @Serializable
-object ResetPassword
+object ChangePassword
 
 @Serializable
 object Profile
