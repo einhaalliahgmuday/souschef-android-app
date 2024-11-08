@@ -1,5 +1,7 @@
 package com.samsantech.souschef.ui
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -30,10 +32,15 @@ import com.samsantech.souschef.viewmodel.AuthViewModel
 
 @Composable
 fun SelectCuisinesScreen(
+    activity: ComponentActivity,
     authViewModel: AuthViewModel,
     onNavigateToSelectDislikes: () -> Unit
 ) {
     val preferences by authViewModel.signUpPreferences.collectAsState()
+
+    BackHandler {
+        activity.finish()
+    }
 
     Column(
         modifier = Modifier
@@ -44,7 +51,10 @@ fun SelectCuisinesScreen(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            SkipButton(onClick = onNavigateToSelectDislikes)
+            SkipButton(onClick = {
+                authViewModel.clearPreferencesCuisine()
+                onNavigateToSelectDislikes()
+            })
 
             Text(
                 text = "Type of cuisines you're most interested with?",
@@ -89,7 +99,8 @@ fun SelectCuisinesScreen(
                         authViewModel.otherCuisine.value = ""
                     }
                     showOtherCuisineTextField = !showOtherCuisineTextField
-                }
+                },
+                borderColor = if (otherCuisine.isNotEmpty()) { Green } else Color.Black
             )
             if (showOtherCuisineTextField) {
                 FormTextField(

@@ -13,13 +13,14 @@ class FirebaseAuthManager(
         return auth.currentUser
     }
 
-    fun createNewUser(user: User, preferences: UserPreferences) {
+    fun signUp(user: User, isSuccess: (Boolean) -> Unit) {
         auth.createUserWithEmailAndPassword(user.email, user.password)
             .addOnSuccessListener {
                 val signedUpUser = getCurrentUser()
                 if (signedUpUser != null) {
-                    firebaseUserManager.createUser(signedUpUser.uid, user.username)
-                    firebaseUserManager.createUserPreferences(signedUpUser.uid, preferences)
+                    firebaseUserManager.createUser(signedUpUser.uid, user.username) {
+                        isSuccess(true)
+                    }
                 }
             }
     }

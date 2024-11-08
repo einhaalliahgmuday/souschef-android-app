@@ -20,7 +20,7 @@ fun SkipButton(onClick: () -> Unit) {
         modifier = Modifier.fillMaxWidth()
     ) {
         Button(
-            onClick = {} ,
+            onClick = onClick ,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
                 contentColor = Color.Black

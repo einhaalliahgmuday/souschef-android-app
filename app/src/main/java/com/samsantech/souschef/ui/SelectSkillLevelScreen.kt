@@ -1,7 +1,6 @@
 package com.samsantech.souschef.ui
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,30 +11,39 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.samsantech.souschef.R
 import com.samsantech.souschef.ui.components.ColoredButton
+import com.samsantech.souschef.ui.components.ProgressSpinner
 import com.samsantech.souschef.ui.components.SelectionCard
-import com.samsantech.souschef.ui.components.SkipButton
+import com.samsantech.souschef.ui.components.SuccessDialog
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
+import com.samsantech.souschef.viewmodel.AuthViewModel
 
 @Composable
-fun SelectSkillLevelScreen() {
+fun SelectSkillLevelScreen(
+    authViewModel: AuthViewModel,
+    onNavigateToSelectDislikes: () -> Unit,
+    onNavigateToHome: () -> Unit
+) {
+    val preferences by authViewModel.signUpPreferences.collectAsState()
+    var status by remember {
+        mutableStateOf("")
+    }
+
     Box(
         Modifier.fillMaxSize()
     ) {
@@ -48,8 +56,7 @@ fun SelectSkillLevelScreen() {
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                SkipButton(onClick = {})
-
+                Spacer(modifier = Modifier.height(50.dp))
                 Text(
                     text = "How skilled are you in the kitchen?",
                     color = Color(0xFF16A637),
@@ -62,20 +69,24 @@ fun SelectSkillLevelScreen() {
                 )
                 Spacer(modifier = Modifier.height(12.dp))
 
-                SelectionCard(
-                    text = "Beginner",
-                    clickable = {  }
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                SelectionCard(
-                    text = "Intermediate",
-                    clickable = {  }
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                SelectionCard(
-                    text = "Advanced",
-                    clickable = {  }
-                )
+                val skillLevels = listOf("Beginner", "Intermediate", "Advanced")
+
+                skillLevels.forEach {  skillLevel ->
+                    val selectedSkillLevel = preferences.skillLevel
+
+                    SelectionCard(
+                        text = skillLevel,
+                        clickable = {
+                            if (selectedSkillLevel == skillLevel) {
+                                authViewModel.clearPreferencesSkillLevel()
+                            } else {
+                                authViewModel.setPreferencesSkillLevel(skillLevel)
+                            }
+                        },
+                        borderColor = if (selectedSkillLevel == skillLevel) { Green } else Color.Black
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
             }
 
             Row(
@@ -83,7 +94,7 @@ fun SelectSkillLevelScreen() {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 ColoredButton(
-                    onClick = {  },
+                    onClick = onNavigateToSelectDislikes,
                     text = "Previous",
                     modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(12.dp, 12.dp),
@@ -92,53 +103,32 @@ fun SelectSkillLevelScreen() {
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 ColoredButton(
-                    onClick = {  },
+                    onClick = {
+                        if (preferences.cuisines?.isEmpty() == true && preferences.dislikes?.isEmpty() == true && preferences.skillLevel.isEmpty()) {
+                            status = "processing"
+
+                            authViewModel.setUserPreferences() {
+                                status = "success"
+                            }
+                        } else {
+                            onNavigateToHome()
+                        }
+                    },
                     text = "Complete",
                     modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(12.dp, 12.dp),
                 )
             }
         }
-        SignUpSuccessfulPopUp()
-    }
-}
-
-@Composable
-fun SignUpSuccessfulPopUp() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f)),
-        contentAlignment = Alignment.Center
-    ){
-        Column(
-            modifier = Modifier
-                .clip(RoundedCornerShape(10.dp))
-                .width(300.dp)
-                .background(Color.White)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.successful_vector),
-                contentDescription = "successful vector",
-                tint = Color(0xFF16A637),
-                modifier = Modifier
-                    .size(50.dp)
+        if (status == "processing") {
+            ProgressSpinner()
+        } else if (status == "success") {
+            SuccessDialog(
+                message = "All done!",
+                subMessage = "Thank you for helping us get to know your preferences.",
+                buttonName = "Go to home",
+                onClick = onNavigateToHome
             )
-            Text(
-                text = "Sign up successful!",
-                color = Color(0xFF16A637),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                fontFamily = Konkhmer_Sleokcher
-            )
-            Text(
-                text = "Your account has been created."
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            ColoredButton(onClick = {  }, text = "Sign in")
         }
     }
 }

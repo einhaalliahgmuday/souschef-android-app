@@ -1,7 +1,10 @@
 package com.samsantech.souschef.ui
 
+import android.util.Patterns
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,8 +21,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.PlatformTextStyle
@@ -30,6 +37,8 @@ import androidx.compose.ui.unit.sp
 import com.samsantech.souschef.R
 import com.samsantech.souschef.ui.components.FormOutlinedTextField
 import com.samsantech.souschef.ui.components.ColoredButton
+import com.samsantech.souschef.ui.components.ProgressSpinner
+import com.samsantech.souschef.ui.components.SuccessDialog
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 import com.samsantech.souschef.viewmodel.AuthViewModel
@@ -41,6 +50,18 @@ fun SignUpScreen(
     onNavigateToLogin: () -> Unit
 ) {
     val signUpInformation by authViewModel.signUpInformation.collectAsState()
+    var signUpStatus by remember {
+        mutableStateOf("")
+    }
+    var errorUsername by remember {
+        mutableStateOf("")
+    }
+    var errorEmail by remember {
+        mutableStateOf("")
+    }
+    var errorPassword by remember {
+        mutableStateOf("")
+    }
 
     Column(
         modifier = Modifier
@@ -68,22 +89,43 @@ fun SignUpScreen(
 
             FormOutlinedTextField(
                 value = signUpInformation.username,
-                onValueChange = {
-                                authViewModel.setSignUpInformation(username = it)
+                onValueChange = { valueChange ->
+                    errorUsername = ""
+                    authViewModel.setSignUpInformation(username = valueChange)
+
+                    if (valueChange.isNotBlank()) {
+                        authViewModel.isUsernameExists(valueChange) {
+                            if (it) {
+                                errorUsername = "Username is already taken."
+                            }
+                        }
+                    }
                 },
                 label = "Username",
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Filled.Person,
-                        contentDescription = "lock icon"
+                        contentDescription = "person icon"
                     )
                 },
             )
+            if (errorUsername.isNotBlank()) {
+                Text(text = errorUsername, fontSize = 14.sp, color = Color.Red, modifier = Modifier.fillMaxWidth())
+            }
             Spacer(modifier = Modifier.height(8.dp))
             FormOutlinedTextField(
                 value = signUpInformation.email,
-                onValueChange = {
-                    authViewModel.setSignUpInformation(email = it)
+                onValueChange = { valueChange ->
+                    errorEmail = ""
+                    authViewModel.setSignUpInformation(email = valueChange)
+
+                    if (valueChange.isNotBlank()) {
+                        authViewModel.isEmailExists(valueChange) {
+                            if (it) {
+                                errorUsername = "Email is already taken."
+                            }
+                        }
+                    }
                 },
                 label = "Email",
                 leadingIcon = {
@@ -93,11 +135,18 @@ fun SignUpScreen(
                     )
                 },
             )
+            if (errorEmail.isNotBlank()) {
+                Text(text = errorEmail, fontSize = 14.sp, color = Color.Red, modifier = Modifier.fillMaxWidth())
+            }
             Spacer(modifier = Modifier.height(8.dp))
+            var isPasswordVisualTransformation by remember {
+                mutableStateOf(true)
+            }
             FormOutlinedTextField(
                 isPassword = true,
                 value = signUpInformation.password,
                 onValueChange = {
+                    errorPassword = ""
                     authViewModel.setSignUpInformation(password = it)
                 },
                 label = "Password",
@@ -109,14 +158,58 @@ fun SignUpScreen(
                 },
                 trailingIcon = {
                     Icon(
-                        painter = painterResource(id = R.drawable.visibility_vector),
-                        contentDescription = "email icon"
+                        painter = if (!isPasswordVisualTransformation) { painterResource(id = R.drawable.visibility_vector) }
+                                    else { painterResource(id = R.drawable.visibility_off_vector) },
+                        contentDescription = "visibility icon",
+                        modifier = Modifier
+                            .clickable {
+                                isPasswordVisualTransformation = !isPasswordVisualTransformation
+                            }
                     )
-                }
+                },
+                isPasswordVisualTransformation = isPasswordVisualTransformation
             )
+            if (errorPassword.isNotBlank()) {
+                Text(text = errorPassword, fontSize = 14.sp, color = Color.Red, modifier = Modifier.fillMaxWidth())
+            }
             Spacer(modifier = Modifier.height(16.dp))
             ColoredButton(
-                onClick = onNavigateToSelectCuisines,
+                onClick = {
+                    val username = signUpInformation.username
+                    val email = signUpInformation.email
+                    val password = signUpInformation.password
+
+                    if (username.isEmpty()) {
+                        errorUsername = "Username is required."
+                    } else {
+                        authViewModel.isUsernameExists(username) {
+                            if (it) {
+                                errorUsername = "Username is already taken."
+                            }
+                        }
+                    }
+                    if (email.isNotEmpty()) {
+                        authViewModel.isEmailExists(email) {
+                            if (it) {
+                                errorEmail = "Email is already taken."
+                            }
+                        }
+                    }
+                    if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                        errorEmail = "Email must be valid format."
+                    }
+                    if (password.length < 8 || !password.contains(Regex("[0-9]"))
+                        || !password.contains(Regex("[A-Z]")) || !password.contains(Regex("[^A-Za-z0-9]"))) {
+                        errorPassword = "Password must be at least 8 characters long, contain a number, an uppercase letter, and a special character."
+                    }
+
+                    if (errorUsername.isEmpty() && errorEmail.isEmpty() && errorPassword.isEmpty()) {
+                        signUpStatus = "processing"
+                        authViewModel.signUp {
+                            signUpStatus = "success"
+                        }
+                    }
+                },
                 text = "Continue"
             )
         }
@@ -137,5 +230,16 @@ fun SignUpScreen(
                 border = BorderStroke(1.dp, Color.Black)
             )
         }
+    }
+
+    if (signUpStatus == "processing") {
+        ProgressSpinner()
+    } else if (signUpStatus == "success") {
+        SuccessDialog(
+            message = "Sign up successful!",
+            subMessage = "Your account has been created.",
+            buttonName = "Continue",
+            onClick = onNavigateToSelectCuisines
+        )
     }
 }

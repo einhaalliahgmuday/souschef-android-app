@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
@@ -23,9 +25,16 @@ import com.samsantech.souschef.ui.components.SelectionCard
 import com.samsantech.souschef.ui.components.SkipButton
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
+import com.samsantech.souschef.viewmodel.AuthViewModel
 
 @Composable
-fun SelectDislikesScreen() {
+fun SelectDislikesScreen(
+    authViewModel: AuthViewModel,
+    onNavigateToSelectCuisines: () -> Unit,
+    onNavigateToSelectSkillLevel: () -> Unit
+) {
+    val preferences by authViewModel.signUpPreferences.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -35,7 +44,10 @@ fun SelectDislikesScreen() {
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            SkipButton(onClick = {})
+            SkipButton(onClick = {
+                authViewModel.clearPreferencesDislikes()
+                onNavigateToSelectSkillLevel()
+            })
 
             Text(
                 text = "Do you have any allergies or dislikes?",
@@ -49,40 +61,24 @@ fun SelectDislikesScreen() {
             )
             Spacer(modifier = Modifier.height(12.dp))
 
-            SelectionCard(
-                text = "Shrimp",
-                clickable = {  }
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            SelectionCard(
-                text = "Garlic",
-                clickable = {  }
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            SelectionCard(
-                text = "Pepper",
-                clickable = {  }
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            SelectionCard(
-                text = "Chili",
-                clickable = {  }
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            SelectionCard(
-                text = "Milk",
-                clickable = {  }
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            SelectionCard(
-                text = "Cheese",
-                clickable = {  }
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            SelectionCard(
-                text = "Ketchup",
-                clickable = {  }
-            )
+            val dislikes = listOf("Shrimp", "Garlic", "Pepper", "Chili", "Milk", "Cheese", "Ketchup")
+
+            dislikes.forEach { dislike ->
+                val isSelected = preferences.dislikes?.contains(dislike)
+
+                SelectionCard(
+                    text = dislike,
+                    clickable = {
+                        if (isSelected == true) {
+                            authViewModel.removePreferencesDislike(dislike)
+                        } else {
+                            authViewModel.addPreferencesDislike(dislike)
+                        }
+                    },
+                    borderColor = if (isSelected == true) { Green } else Color.Black
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+            }
         }
 
         Row(
@@ -90,7 +86,7 @@ fun SelectDislikesScreen() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             ColoredButton(
-                onClick = {  },
+                onClick = onNavigateToSelectCuisines,
                 text = "Previous",
                 modifier = Modifier.weight(1f),
                 contentPadding = PaddingValues(12.dp, 12.dp),
@@ -99,7 +95,7 @@ fun SelectDislikesScreen() {
             )
             Spacer(modifier = Modifier.width(12.dp))
             ColoredButton(
-                onClick = {  },
+                onClick = onNavigateToSelectSkillLevel,
                 text = "Next Step",
                 modifier = Modifier.weight(1f),
                 contentPadding = PaddingValues(12.dp, 12.dp),

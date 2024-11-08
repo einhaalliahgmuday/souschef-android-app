@@ -36,7 +36,7 @@ fun SousChefApp(
     Box {
         val navController = rememberNavController()
 
-        NavHost(navController = navController, startDestination = SelectCuisines) {
+        NavHost(navController = navController, startDestination = SignUp) {
             composable<Opening> {
                 OpeningScreen(
                     onNavigateToGetStarted = { navController.navigate(route = GetStarted) }
@@ -78,18 +78,23 @@ fun SousChefApp(
             }
             composable<SelectCuisines> {
                 SelectCuisinesScreen(
+                    activity,
                     authViewModel = authViewModel,
                     onNavigateToSelectDislikes = { navController.navigate(route = SelectDislikes) },
                 )
             }
             composable<SelectDislikes> {
                 SelectDislikesScreen(
-                    authViewModel = authViewModel
+                    authViewModel = authViewModel,
+                    onNavigateToSelectCuisines = { navController.navigate(route = SelectCuisines) },
+                    onNavigateToSelectSkillLevel = { navController.navigate(route = SelectSkillLevel) },
                 )
             }
             composable<SelectSkillLevel> {
                 SelectSkillLevelScreen(
-                    authViewModel = authViewModel
+                    authViewModel = authViewModel,
+                    onNavigateToSelectDislikes = { navController.navigate(route = SelectDislikes) },
+                    onNavigateToHome = { navController.navigate(route = Home) },
                 )
             }
             composable<EditProfile> {

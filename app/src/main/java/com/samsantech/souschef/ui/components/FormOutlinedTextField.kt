@@ -21,7 +21,8 @@ fun FormOutlinedTextField(isPassword: Boolean = false,
                           value: String, onValueChange: (String) -> Unit,
                           label: String? = null,
                           leadingIcon:  @Composable() (() -> Unit)? = null,
-                          trailingIcon:  @Composable() (() -> Unit)? = null) {
+                          trailingIcon:  @Composable() (() -> Unit)? = null,
+                          isPasswordVisualTransformation: Boolean = false) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -33,12 +34,12 @@ fun FormOutlinedTextField(isPassword: Boolean = false,
         modifier = Modifier
             .fillMaxWidth(),
         textStyle = LocalTextStyle.current.merge(
-            fontSize = 10.sp
+            fontSize = 16.sp
         ),
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         shape = RoundedCornerShape(16.dp),
-        visualTransformation = if (isPassword) { PasswordVisualTransformation() } else { VisualTransformation.None } ,
+        visualTransformation = if (isPasswordVisualTransformation) { PasswordVisualTransformation() } else { VisualTransformation.None } ,
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = Color.Black,
             unfocusedBorderColor = Color.Black

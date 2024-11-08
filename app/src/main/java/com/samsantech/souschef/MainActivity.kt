@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
                 val db = Firebase.firestore
                 val storage = Firebase.storage
 
-                val firebaseUserManager = FirebaseUserManager(db, storage)
+                val firebaseUserManager = FirebaseUserManager(auth, db, storage)
                 val firebaseAuthManager = FirebaseAuthManager(auth, firebaseUserManager)
 
                 val user = firebaseAuthManager.getCurrentUser()
