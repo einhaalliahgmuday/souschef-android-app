@@ -27,6 +27,7 @@ import com.samsantech.souschef.ui.SelectDislikesScreen
 import com.samsantech.souschef.ui.SelectSkillLevelScreen
 import com.samsantech.souschef.ui.SignUpOrLoginScreen
 import com.samsantech.souschef.ui.SignUpScreen
+import com.samsantech.souschef.ui.UpdateEmailScreen
 import com.samsantech.souschef.viewmodel.AuthViewModel
 import com.samsantech.souschef.viewmodel.UserViewModel
 import kotlinx.serialization.Serializable
@@ -42,10 +43,15 @@ fun SousChefApp(
     Box {
         val navController = rememberNavController()
 
-        NavHost(navController = navController, startDestination = Profile) {
+        NavHost(navController = navController, startDestination = Login) {
             composable<Opening> {
+                var afterOpening: Any = Opening
+
+                if (user != null) {
+                    afterOpening = Profile
+                }
                 OpeningScreen(
-                    onNavigateToGetStarted = { navController.navigate(route = GetStarted) }
+                    onNavigateTo = { navController.navigate(route = afterOpening) }
                 )
             }
             composable<GetStarted> {
@@ -63,6 +69,7 @@ fun SousChefApp(
             composable<Login> {
                 LoginScreen(
                     authViewModel,
+                    userViewModel,
                     onNavigateToSignUp = { navController.navigate(route = SignUp) },
                     onNavigateToForgotPassword = { navController.navigate(route = ResetPassword) },
                     onNavigateToHome = { navController.navigate(route = Profile) }
@@ -77,12 +84,13 @@ fun SousChefApp(
             composable<ChangePassword> {
                 ChangePasswordScreen(
                     authViewModel,
-                    onNavigateToProfile = { navController.navigate(route = Profile) }
+                    onNavigateToEditProfile = { navController.navigate(route = EditProfile) }
                 )
             }
             composable<SignUp> {
                 SignUpScreen(
                     authViewModel = authViewModel,
+                    userViewModel,
                     onNavigateToSelectCuisines = { navController.navigate(route = SelectCuisines) },
                     onNavigateToLogin = { navController.navigate(route = Login) },
                 )
@@ -90,36 +98,56 @@ fun SousChefApp(
             composable<SelectCuisines> {
                 SelectCuisinesScreen(
                     activity,
-                    authViewModel = authViewModel,
+                    userViewModel = userViewModel,
                     onNavigateToSelectDislikes = { navController.navigate(route = SelectDislikes) },
                 )
             }
             composable<SelectDislikes> {
                 SelectDislikesScreen(
-                    authViewModel = authViewModel,
+                    userViewModel = userViewModel,
                     onNavigateToSelectCuisines = { navController.navigate(route = SelectCuisines) },
                     onNavigateToSelectSkillLevel = { navController.navigate(route = SelectSkillLevel) },
                 )
             }
             composable<SelectSkillLevel> {
                 SelectSkillLevelScreen(
-                    authViewModel = authViewModel,
+                    userViewModel = userViewModel,
                     onNavigateToSelectDislikes = { navController.navigate(route = SelectDislikes) },
                     onNavigateToHome = { navController.navigate(route = Home) },
                 )
             }
             composable<EditProfile> {
-                EditProfileScreen()
+                EditProfileScreen(
+                    context,
+                    authViewModel = authViewModel,
+                    userViewModel = userViewModel,
+                    onNavigateToProfile = { navController.navigate(route = Profile) },
+                    onNavigateToUpdateEmail = { navController.navigate(route = UpdateEmail)},
+                    onNavigateToChangePassword = { navController.navigate(route = ChangePassword) },
+                    onNavigateToLogin = { navController.navigate(route = Login) }
+                )
+            }
+            composable<UpdateEmail> {
+                UpdateEmailScreen(
+                    context,
+                    authViewModel,
+                    userViewModel,
+                    onNavigateToEditProfile = {
+                        navController.navigate(route = EditProfile) {
+                            popUpTo(EditProfile) { inclusive = true }
+                        }
+                    }
+                )
             }
             composable<Home> {
                 HomeScreen()
             }
             composable<Profile> {
-                if (user != null) {
-                    ProfileScreen(context, userViewModel)
-                } else {
-                    navController.navigate(route = Login)
-                }
+                ProfileScreen(
+                    context,
+                    userViewModel,
+                    onNavigateToEditProfile = { navController.navigate(route = EditProfile) }
+                )
             }
             composable<SelectCategory> {
                 SelectCategoryScreen()
@@ -178,6 +206,9 @@ object Profile
 
 @Serializable
 object EditProfile
+
+@Serializable
+object UpdateEmail
 
 @Serializable
 object Home

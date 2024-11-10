@@ -1,8 +1,7 @@
 package com.samsantech.souschef.ui
 
 import android.content.Context
-import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
+import android.util.Patterns
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,32 +29,33 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samsantech.souschef.ui.components.ColoredButton
+import com.samsantech.souschef.ui.components.ErrorText
 import com.samsantech.souschef.ui.components.FormOutlinedTextField
 import com.samsantech.souschef.ui.components.Header
+import com.samsantech.souschef.ui.components.PasswordOutlinedTextField
 import com.samsantech.souschef.ui.components.ProgressSpinner
-import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 import com.samsantech.souschef.viewmodel.AuthViewModel
 import com.samsantech.souschef.viewmodel.UserViewModel
 
 @Composable
-fun EditProfileScreen(
+fun UpdateEmailScreen(
     context: Context,
     authViewModel: AuthViewModel,
     userViewModel: UserViewModel,
-    onNavigateToProfile: () -> Unit,
-    onNavigateToUpdateEmail: () -> Unit,
-    onNavigateToChangePassword: () -> Unit,
-    onNavigateToLogin: () -> Unit
+    onNavigateToEditProfile: () -> Unit,
 ) {
 
     val user by userViewModel.user.collectAsState()
 
-    var displayName by remember {
-        mutableStateOf(user?.displayName)
+    var email by remember {
+        mutableStateOf(user?.email)
     }
-    var username by remember {
-        mutableStateOf(user?.username)
+    var password by remember {
+        mutableStateOf("")
+    }
+    var errorEmail by remember {
+        mutableStateOf("")
     }
     var error by remember {
         mutableStateOf("")
@@ -79,7 +79,7 @@ fun EditProfileScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Edit Profile",
+                        text = "Update Email",
                         color = Color(0xFF16A637),
                         fontSize = 25.sp,
                         fontFamily = Konkhmer_Sleokcher,
@@ -92,38 +92,22 @@ fun EditProfileScreen(
                         )
                     )
 
-                    displayName?.let {
+                    email?.let {
                         FormOutlinedTextField(
                             value = it,
                             onValueChange = { valueChange ->
-                                displayName = valueChange
-                            },
-                            label = "Name",
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Filled.Person,
-                                    contentDescription = null
-                                )
-                            },
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    username?.let {
-                        FormOutlinedTextField(
-                            value = it,
-                            onValueChange = { valueChange ->
-                                error = ""
-                                username = valueChange
+                                errorEmail = ""
+                                email = valueChange
 
-                                if (valueChange.isNotBlank() && valueChange != user!!.username) {
-                                    userViewModel.isUsernameExists(valueChange) {
+                                if (valueChange.isNotBlank()) {
+                                    userViewModel.isEmailExists(valueChange) {
                                         if (it) {
-                                            error = "Username is already taken."
+                                            errorEmail = "Email is already taken."
                                         }
                                     }
                                 }
                             },
-                            label = "Username",
+                            label = "Email",
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Filled.Person,
@@ -132,69 +116,50 @@ fun EditProfileScreen(
                             },
                         )
                     }
+                    if (errorEmail.isNotBlank()) {
+                        ErrorText(text = errorEmail)
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    PasswordOutlinedTextField(
+                        value = password,
+                        onValueChange = {
+                            error = ""
+                            password = it
+                        },
+                        label = "Confirm Your Password",
+                        withLeadingIcon = true
+                    )
                     if (error.isNotBlank()) {
-                        Text(
-                            text = error,
-                            fontSize = 14.sp,
-                            color = Color.Red,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        ErrorText(text = error)
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     ColoredButton(
                         onClick = {
-                            if ((displayName?.isNotEmpty() == true || username?.isNotEmpty() == true) && error.isEmpty()) {
+                            if (!email?.let { Patterns.EMAIL_ADDRESS.matcher(it).matches() }!!) {
+                                errorEmail = "Email must be valid format."
+                            }
+
+                            if (password.isEmpty()) {
+                                error = "Password confirmation is required."
+                            }
+
+                            if (errorEmail.isEmpty() && error.isEmpty()) {
                                 loading = true
 
-                                userViewModel.updateProfile(
-                                    displayName,
-                                    username
-                                ) { isSuccess, errorMessage ->
+                                userViewModel.updateEmail(email!!, password) { isSuccess, errorMessage ->
                                     loading = false
 
                                     if (isSuccess) {
-                                        onNavigateToProfile()
+                                        onNavigateToEditProfile()
                                     } else {
                                         if (errorMessage != null) {
-                                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG)
-                                                .show()
+                                            error = errorMessage
                                         }
                                     }
                                 }
                             }
                         },
                         text = "Save"
-                    )
-                }
-
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    ColoredButton(
-                        onClick = onNavigateToUpdateEmail,
-                        containerColor = Color.White, contentColor = Green,
-                        text = "Update Email",
-                        border = BorderStroke(1.dp, Color.Black)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ColoredButton(
-                        onClick = onNavigateToChangePassword,
-                        containerColor = Color.White, contentColor = Green,
-                        text = "Change Password",
-                        border = BorderStroke(1.dp, Color.Black)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ColoredButton(
-                        onClick = {
-                            loading = true
-                            authViewModel.logout()
-                            loading = false
-                            onNavigateToLogin()
-                        },
-                        containerColor = Color.Red, contentColor = Color.White,
-                        text = "Logout",
-                        border = BorderStroke(1.dp, Color(0xFF800020))
                     )
                 }
             }

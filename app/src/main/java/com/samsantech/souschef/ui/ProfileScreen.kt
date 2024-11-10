@@ -72,8 +72,14 @@ import com.samsantech.souschef.viewmodel.UserViewModel
 fun ProfileScreen(
     context: Context,
     userViewModel: UserViewModel,
+    onNavigateToEditProfile: () -> Unit
 ) {
     val user by userViewModel.user.collectAsState()
+
+    if (user == null) {
+        onNavigateToEditProfile()
+    }
+
     var loading by remember {
         mutableStateOf(false)
     }
@@ -114,9 +120,9 @@ fun ProfileScreen(
                         .clickable { showProfileImage = true },
                     contentAlignment = Alignment.Center
                 ) {
-                    if (user.photoUrl != null) {
+                    if (user?.photoUrl != null) {
                         AsyncImage(
-                            model = "${user.photoUrl}",
+                            model = "${user!!.photoUrl}",
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -155,27 +161,36 @@ fun ProfileScreen(
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = user.displayName,
-                fontFamily = Konkhmer_Sleokcher,
-                fontSize = 20.sp,
-                color = Color(0xFF16A637),
-                style = LocalTextStyle.current.merge(
-                    TextStyle(
-                        platformStyle = PlatformTextStyle(
-                            includeFontPadding = false
-                        ),
+            Spacer(modifier = Modifier.height(10.dp))
+            user?.let {
+                Text(
+                    text = it.displayName,
+                    fontFamily = Konkhmer_Sleokcher,
+                    fontSize = 20.sp,
+                    color = Color(0xFF16A637),
+                    style = LocalTextStyle.current.merge(
+                        TextStyle(
+                            platformStyle = PlatformTextStyle(
+                                includeFontPadding = false
+                            ),
+                        )
                     )
                 )
-            )
-            Text(
-                text = user.username,
-                fontStyle = FontStyle.Italic
-            )
+            }
+            user?.let {
+                Text(
+                    text = it.username,
+                    fontStyle = FontStyle.Italic
+                )
+            }
+            user?.let {
+                Text(
+                    text = it.email
+                )
+            }
             Spacer(modifier = Modifier.height(12.dp))
 
-            ColoredButton(onClick = {}, text = "Edit Profile")
+            ColoredButton(onClick = onNavigateToEditProfile, text = "Settings")
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(
@@ -230,7 +245,7 @@ fun ProfileScreen(
 
                     userViewModel.setProfilePicture(imageUri!!) { _, error ->
                         if (error != null) {
-                            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
                         }
 
                         loading = false
@@ -244,7 +259,7 @@ fun ProfileScreen(
 
     if (showProfileImage) {
         DisplayProfileImage(
-            uri = "${user.photoUrl}",
+            uri = "${user?.photoUrl}",
             onOkay = {
                 showProfileImage = false
 
