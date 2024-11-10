@@ -1,6 +1,8 @@
 package com.samsantech.souschef.firebase
 
+import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.samsantech.souschef.data.User
@@ -72,5 +74,42 @@ class FirebaseUserManager(private val auth: FirebaseAuth, private val db: Fireba
                     callback(null)
                 }
             }
+    }
+
+    fun uploadUserProfilePicture(imageUri: Uri, callback: (Boolean, String?) -> Unit) {
+        val user = auth.currentUser
+
+        if (user != null) {
+            val storageRef = storage.reference
+            val userProfileRef = storageRef.child("profile/${user.uid}.jpg")
+
+            val uploadTask = userProfileRef.putFile(imageUri)
+
+            uploadTask.continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    callback(false, getErrorMessage(task.exception))
+                }
+
+                userProfileRef.downloadUrl
+            }.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val downloadUri = task.result
+
+                    val profileUpdates = userProfileChangeRequest {
+                        photoUri = Uri.parse("$downloadUri")
+                    }
+                    user.updateProfile(profileUpdates)
+                        .addOnCompleteListener {
+                            if (!it.isSuccessful) {
+                                callback(true, getErrorMessage(task.exception))
+                            } else {
+                                callback(true, null)
+                            }
+                        }
+                } else {
+                    callback(true, getErrorMessage(task.exception))
+                }
+            }
+        }
     }
 }

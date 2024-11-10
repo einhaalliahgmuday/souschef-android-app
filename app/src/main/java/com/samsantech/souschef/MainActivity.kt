@@ -30,21 +30,16 @@ class MainActivity : ComponentActivity() {
                 val user = firebaseAuthManager.getCurrentUser()
 
                 val authViewModel = AuthViewModel(firebaseAuthManager, firebaseUserManager)
-                val userViewModel = UserViewModel(firebaseUserManager)
+                val userViewModel = UserViewModel(firebaseAuthManager, firebaseUserManager)
 
                 SousChefApp(
                     user,
                     activity = this,
+                    context = this,
                     authViewModel,
                     userViewModel
                 )
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-
     }
 }

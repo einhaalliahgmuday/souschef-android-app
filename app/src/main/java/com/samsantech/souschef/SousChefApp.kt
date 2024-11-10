@@ -1,5 +1,6 @@
 package com.samsantech.souschef
 
+import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
@@ -11,7 +12,7 @@ import com.samsantech.souschef.ui.CreateRecipeScreenOne
 import com.samsantech.souschef.ui.CreateRecipeScreenThree
 import com.samsantech.souschef.ui.CreateRecipeScreenTwo
 import com.samsantech.souschef.ui.EditProfileScreen
-import com.samsantech.souschef.ui.ForgotPasswordScreen
+import com.samsantech.souschef.ui.ResetPasswordScreen
 import com.samsantech.souschef.ui.GetStartedScreen
 import com.samsantech.souschef.ui.HomeScreen
 import com.samsantech.souschef.ui.LoginScreen
@@ -34,13 +35,14 @@ import kotlinx.serialization.Serializable
 fun SousChefApp(
     user: FirebaseUser?,
     activity: ComponentActivity,
+    context: Context,
     authViewModel: AuthViewModel,
     userViewModel: UserViewModel
 ) {
     Box {
         val navController = rememberNavController()
 
-        NavHost(navController = navController, startDestination = ChangePassword) {
+        NavHost(navController = navController, startDestination = Profile) {
             composable<Opening> {
                 OpeningScreen(
                     onNavigateToGetStarted = { navController.navigate(route = GetStarted) }
@@ -62,12 +64,13 @@ fun SousChefApp(
                 LoginScreen(
                     authViewModel,
                     onNavigateToSignUp = { navController.navigate(route = SignUp) },
-                    onNavigateToForgotPassword = { navController.navigate(route = ForgotPassword) },
-                    onNavigateToHome = { navController.navigate(route = Home) }
+                    onNavigateToForgotPassword = { navController.navigate(route = ResetPassword) },
+                    onNavigateToHome = { navController.navigate(route = Profile) }
                 )
             }
-            composable<ForgotPassword> {
-                ForgotPasswordScreen(
+            composable<ResetPassword> {
+                ResetPasswordScreen(
+                    authViewModel,
                     onNavigateToLogin = { navController.navigate(route = Login) }
                 )
             }
@@ -113,7 +116,7 @@ fun SousChefApp(
             }
             composable<Profile> {
                 if (user != null) {
-                    ProfileScreen(userViewModel, user)
+                    ProfileScreen(context, userViewModel)
                 } else {
                     navController.navigate(route = Login)
                 }
@@ -165,7 +168,7 @@ object SelectSkillLevel
 object Login
 
 @Serializable
-object ForgotPassword
+object ResetPassword
 
 @Serializable
 object ChangePassword
