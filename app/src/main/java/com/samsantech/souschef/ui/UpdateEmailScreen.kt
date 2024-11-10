@@ -1,6 +1,5 @@
 package com.samsantech.souschef.ui
 
-import android.content.Context
 import android.util.Patterns
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,13 +34,10 @@ import com.samsantech.souschef.ui.components.Header
 import com.samsantech.souschef.ui.components.PasswordOutlinedTextField
 import com.samsantech.souschef.ui.components.ProgressSpinner
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
-import com.samsantech.souschef.viewmodel.AuthViewModel
 import com.samsantech.souschef.viewmodel.UserViewModel
 
 @Composable
 fun UpdateEmailScreen(
-    context: Context,
-    authViewModel: AuthViewModel,
     userViewModel: UserViewModel,
     onNavigateToEditProfile: () -> Unit,
 ) {

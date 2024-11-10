@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
 
                 val user = auth.currentUser
 
-                val authViewModel = AuthViewModel(firebaseAuthManager, firebaseUserManager)
+                val authViewModel = AuthViewModel(firebaseAuthManager)
                 val userViewModel = UserViewModel(firebaseAuthManager, firebaseUserManager)
 
                 SousChefApp(

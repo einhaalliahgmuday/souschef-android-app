@@ -199,7 +199,7 @@ fun EditProfileScreen(
                         },
                         containerColor = Color.Red, contentColor = Color.White,
                         text = "Logout",
-                        border = BorderStroke(1.dp, Color(0xFF800020))
+                        border = BorderStroke(1.dp, Color.Red)
                     )
                 }
             }

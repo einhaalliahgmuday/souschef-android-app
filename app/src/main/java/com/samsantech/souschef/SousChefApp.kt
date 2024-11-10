@@ -43,13 +43,13 @@ fun SousChefApp(
     Box {
         val navController = rememberNavController()
 
-        NavHost(navController = navController, startDestination = Login) {
+        NavHost(navController = navController, startDestination = Opening) {
             composable<Opening> {
-                var afterOpening: Any = Opening
-
+                var afterOpening: Any = Login
                 if (user != null) {
                     afterOpening = Profile
                 }
+
                 OpeningScreen(
                     onNavigateTo = { navController.navigate(route = afterOpening) }
                 )
@@ -130,8 +130,6 @@ fun SousChefApp(
             }
             composable<UpdateEmail> {
                 UpdateEmailScreen(
-                    context,
-                    authViewModel,
                     userViewModel,
                     onNavigateToEditProfile = {
                         navController.navigate(route = EditProfile) {
