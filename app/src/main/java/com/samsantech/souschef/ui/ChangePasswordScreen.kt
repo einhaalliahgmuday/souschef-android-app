@@ -29,7 +29,7 @@ import com.samsantech.souschef.viewmodel.AuthViewModel
 @Composable
 fun ChangePasswordScreen(
     authViewModel: AuthViewModel,
-    onNavigateToProfile: () -> Unit
+    onNavigateToEditProfile: () -> Unit
 ) {
     var oldPassword by remember {
         mutableStateOf("")
@@ -43,7 +43,7 @@ fun ChangePasswordScreen(
     var error by remember {
         mutableStateOf("")
     }
-    var isProcessing by remember {
+    var loading by remember {
         mutableStateOf(false)
     }
 
@@ -109,11 +109,11 @@ fun ChangePasswordScreen(
                     error = "Password confirmation do not match."
                 }
                 if (error.isBlank()) {
-                    isProcessing = true
+                    loading = true
                     authViewModel.changePassword(oldPassword, newPassword) { isSuccess, errorMessage ->
-                        isProcessing = false
+                        loading = false
                         if (isSuccess) {
-                            onNavigateToProfile()
+                            onNavigateToEditProfile()
                         } else {
                             error = errorMessage ?: "An error occurred. Please try again."
                         }
@@ -124,7 +124,7 @@ fun ChangePasswordScreen(
         )
     }
 
-    if (isProcessing) {
+    if (loading) {
         ProgressSpinner()
     }
 }

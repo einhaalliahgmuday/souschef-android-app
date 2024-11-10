@@ -18,7 +18,7 @@ class FirebaseAuthManager(
             .addOnSuccessListener {
                 val signedUpUser = getCurrentUser()
                 if (signedUpUser != null) {
-                    firebaseUserManager.createUser(signedUpUser.uid, user.displayName, user.username, ) {
+                    firebaseUserManager.createUser(signedUpUser.uid, user.email, user.username) {
                         isSuccess(true)
                     }
                 }
@@ -61,6 +61,7 @@ class FirebaseAuthManager(
                                     if (!updatePasswordTask.isSuccessful) {
                                         callback(false, getErrorMessage(task.exception))
                                     } else {
+                                        user.reload()
                                         callback(true, null)
                                     }
                                 }
@@ -76,7 +77,6 @@ class FirebaseAuthManager(
                 if (task.isSuccessful) {
                     callback(true, null)
                 } else {
-                    println(task.exception)
                     callback(false, getErrorMessage(task.exception))
                 }
             }
