@@ -77,7 +77,7 @@ fun SignUpScreen(
             Text(
                 text = "Create an account",
                 color = Color(0xFF16A637),
-                fontSize = 32.sp,
+                fontSize = 25.sp,
                 fontFamily = Konkhmer_Sleokcher,
                 style = LocalTextStyle.current.merge(
                     TextStyle(
