@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
                 val firebaseUserManager = FirebaseUserManager(auth, db, storage)
                 val firebaseAuthManager = FirebaseAuthManager(auth, firebaseUserManager)
 
-                val user = firebaseAuthManager.getCurrentUser()
+                val user = auth.currentUser
 
                 val authViewModel = AuthViewModel(firebaseAuthManager, firebaseUserManager)
                 val userViewModel = UserViewModel(firebaseAuthManager, firebaseUserManager)

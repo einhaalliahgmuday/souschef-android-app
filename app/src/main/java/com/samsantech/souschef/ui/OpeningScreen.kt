@@ -15,7 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 @Composable
-fun OpeningScreen(onNavigateToGetStarted: () -> Unit) {
+fun OpeningScreen(onNavigateTo: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -30,7 +30,7 @@ fun OpeningScreen(onNavigateToGetStarted: () -> Unit) {
         delay(4000)
 
         withContext(Dispatchers.Main) {
-            onNavigateToGetStarted()
+            onNavigateTo()
         }
     }
 }

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
@@ -24,23 +23,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.samsantech.souschef.R
 import com.samsantech.souschef.ui.components.FormOutlinedTextField
 import com.samsantech.souschef.ui.components.ColoredButton
+import com.samsantech.souschef.ui.components.PasswordOutlinedTextField
 import com.samsantech.souschef.ui.components.ProgressSpinner
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 import com.samsantech.souschef.viewmodel.AuthViewModel
+import com.samsantech.souschef.viewmodel.UserViewModel
 
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
+    userViewModel: UserViewModel,
     onNavigateToSignUp: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
     onNavigateToHome: () -> Unit
@@ -61,7 +61,7 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 80.dp, bottom = 70.dp, start = 32.dp, end = 32.dp),
+            .padding(top = 80.dp, bottom = 70.dp, start = 25.dp, end = 25.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column(
@@ -96,34 +96,12 @@ fun LoginScreen(
                 },
             )
             Spacer(modifier = Modifier.height(8.dp))
-            var isPasswordVisualTransformation by remember {
-                mutableStateOf(true)
-            }
-            FormOutlinedTextField(
-                isPassword = true,
+            PasswordOutlinedTextField(
                 value = password,
                 onValueChange = {
-                                password = it
+                    password = it
                 },
-                label = "Password",
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Lock,
-                        contentDescription = "lock icon"
-                    )
-                },
-                trailingIcon = {
-                    Icon(
-                        painter = if (!isPasswordVisualTransformation) { painterResource(id = R.drawable.visibility_vector) }
-                            else { painterResource(id = R.drawable.visibility_off_vector) },
-                        contentDescription = null,
-                        modifier = Modifier
-                            .clickable {
-                                isPasswordVisualTransformation = !isPasswordVisualTransformation
-                            }
-                    )
-                },
-                isPasswordVisualTransformation = isPasswordVisualTransformation
+                label = "Password", withLeadingIcon = true
             )
             if (loginError.isNotBlank()) {
                 Spacer(modifier = Modifier.height(10.dp))
@@ -154,6 +132,7 @@ fun LoginScreen(
                             isLoggingIn = false
 
                             if (isSuccess) {
+                                userViewModel.refreshUser()
                                 onNavigateToHome()
                             } else {
                                 loginError = err ?: "Unable to login"

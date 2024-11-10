@@ -10,19 +10,15 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FormOutlinedTextField(isPassword: Boolean = false,
-                          value: String, onValueChange: (String) -> Unit,
+fun FormOutlinedTextField(value: String, onValueChange: (String) -> Unit,
                           label: String? = null,
                           leadingIcon:  @Composable() (() -> Unit)? = null,
-                          trailingIcon:  @Composable() (() -> Unit)? = null,
-                          isPasswordVisualTransformation: Boolean = false) {
+                          trailingIcon:  @Composable() (() -> Unit)? = null, maxLines: Int = 1) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -31,6 +27,7 @@ fun FormOutlinedTextField(isPassword: Boolean = false,
                 Text(text = label)
             }
         },
+        maxLines = maxLines,
         modifier = Modifier
             .fillMaxWidth(),
         textStyle = LocalTextStyle.current.merge(
@@ -39,7 +36,6 @@ fun FormOutlinedTextField(isPassword: Boolean = false,
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         shape = RoundedCornerShape(16.dp),
-        visualTransformation = if (isPasswordVisualTransformation) { PasswordVisualTransformation() } else { VisualTransformation.None } ,
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = Color.Black,
             unfocusedBorderColor = Color.Black

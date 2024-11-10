@@ -25,15 +25,15 @@ import com.samsantech.souschef.ui.components.SelectionCard
 import com.samsantech.souschef.ui.components.SkipButton
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
-import com.samsantech.souschef.viewmodel.AuthViewModel
+import com.samsantech.souschef.viewmodel.UserViewModel
 
 @Composable
 fun SelectDislikesScreen(
-    authViewModel: AuthViewModel,
+    userViewModel: UserViewModel,
     onNavigateToSelectCuisines: () -> Unit,
     onNavigateToSelectSkillLevel: () -> Unit
 ) {
-    val preferences by authViewModel.signUpPreferences.collectAsState()
+    val preferences by userViewModel.signUpPreferences.collectAsState()
 
     Column(
         modifier = Modifier
@@ -45,7 +45,7 @@ fun SelectDislikesScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             SkipButton(onClick = {
-                authViewModel.clearPreferencesDislikes()
+                userViewModel.clearPreferencesDislikes()
                 onNavigateToSelectSkillLevel()
             })
 
@@ -70,9 +70,9 @@ fun SelectDislikesScreen(
                     text = dislike,
                     clickable = {
                         if (isSelected == true) {
-                            authViewModel.removePreferencesDislike(dislike)
+                            userViewModel.removePreferencesDislike(dislike)
                         } else {
-                            authViewModel.addPreferencesDislike(dislike)
+                            userViewModel.addPreferencesDislike(dislike)
                         }
                     },
                     borderColor = if (isSelected == true) { Green } else Color.Black

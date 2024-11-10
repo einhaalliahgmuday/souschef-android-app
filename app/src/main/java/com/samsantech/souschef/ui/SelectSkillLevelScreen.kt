@@ -30,17 +30,20 @@ import com.samsantech.souschef.ui.components.SelectionCard
 import com.samsantech.souschef.ui.components.SuccessDialog
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
-import com.samsantech.souschef.viewmodel.AuthViewModel
+import com.samsantech.souschef.viewmodel.UserViewModel
 
 @Composable
 fun SelectSkillLevelScreen(
-    authViewModel: AuthViewModel,
+    userViewModel: UserViewModel,
     onNavigateToSelectDislikes: () -> Unit,
     onNavigateToHome: () -> Unit
 ) {
-    val preferences by authViewModel.signUpPreferences.collectAsState()
-    var status by remember {
-        mutableStateOf("")
+    val preferences by userViewModel.signUpPreferences.collectAsState()
+    var loading by remember {
+        mutableStateOf(false)
+    }
+    var success by remember {
+        mutableStateOf(false)
     }
 
     Box(
@@ -77,9 +80,9 @@ fun SelectSkillLevelScreen(
                         text = skillLevel,
                         clickable = {
                             if (selectedSkillLevel == skillLevel) {
-                                authViewModel.clearPreferencesSkillLevel()
+                                userViewModel.clearPreferencesSkillLevel()
                             } else {
-                                authViewModel.setPreferencesSkillLevel(skillLevel)
+                                userViewModel.setPreferencesSkillLevel(skillLevel)
                             }
                         },
                         borderColor = if (selectedSkillLevel == skillLevel) { Green } else Color.Black
@@ -104,10 +107,11 @@ fun SelectSkillLevelScreen(
                 ColoredButton(
                     onClick = {
                         if (preferences.cuisines?.isEmpty() == true && preferences.dislikes?.isEmpty() == true && preferences.skillLevel.isEmpty()) {
-                            status = "processing"
+                            loading = true
 
-                            authViewModel.setUserPreferences() {
-                                status = "success"
+                            userViewModel.setUserPreferences() {
+                                loading = false
+                                success = true
                             }
                         } else {
                             onNavigateToHome()
@@ -119,9 +123,11 @@ fun SelectSkillLevelScreen(
                 )
             }
         }
-        if (status == "processing") {
+        if (loading) {
             ProgressSpinner()
-        } else if (status == "success") {
+        }
+
+        if (success){
             SuccessDialog(
                 message = "All done!",
                 subMessage = "Thank you for helping us get to know your preferences.",

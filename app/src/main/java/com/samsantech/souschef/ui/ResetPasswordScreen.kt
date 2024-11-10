@@ -116,7 +116,7 @@ fun ResetPasswordScreen(
                         }
                     }
                 },
-                text = "Send Code"
+                text = "Send Reset Email"
             )
         }
 
@@ -144,7 +144,7 @@ fun ResetPasswordScreen(
     if (success) {
         SuccessDialog(
             message = "Reset Link Sent",
-            subMessage = "If this email is registered, you will receive a password reset email.",
+            subMessage = "Password reset link has been successfully sent to your email.",
             buttonName = "Okay",
             onClick = onNavigateToLogin
         )

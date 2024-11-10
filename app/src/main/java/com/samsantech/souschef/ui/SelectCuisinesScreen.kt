@@ -28,15 +28,15 @@ import com.samsantech.souschef.ui.components.SelectionCard
 import com.samsantech.souschef.ui.components.SkipButton
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
-import com.samsantech.souschef.viewmodel.AuthViewModel
+import com.samsantech.souschef.viewmodel.UserViewModel
 
 @Composable
 fun SelectCuisinesScreen(
     activity: ComponentActivity,
-    authViewModel: AuthViewModel,
+    userViewModel: UserViewModel,
     onNavigateToSelectDislikes: () -> Unit
 ) {
-    val preferences by authViewModel.signUpPreferences.collectAsState()
+    val preferences by userViewModel.signUpPreferences.collectAsState()
 
     BackHandler {
         activity.finish()
@@ -52,7 +52,7 @@ fun SelectCuisinesScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             SkipButton(onClick = {
-                authViewModel.clearPreferencesCuisine()
+                userViewModel.clearPreferencesCuisine()
                 onNavigateToSelectDislikes()
             })
 
@@ -77,16 +77,16 @@ fun SelectCuisinesScreen(
                     text = cuisine,
                     clickable = {
                         if (isSelected == true) {
-                            authViewModel.removePreferencesCuisine(cuisine)
+                            userViewModel.removePreferencesCuisine(cuisine)
                         } else {
-                            authViewModel.addPreferencesCuisine(cuisine)
+                            userViewModel.addPreferencesCuisine(cuisine)
                         }
                     },
                     borderColor = if (isSelected == true) { Green } else Color.Black
                 )
                 Spacer(modifier = Modifier.height(10.dp))
             }
-            val otherCuisine by authViewModel.otherCuisine.collectAsState()
+            val otherCuisine by userViewModel.otherCuisine.collectAsState()
 
             var showOtherCuisineTextField by remember {
                 mutableStateOf(otherCuisine.isNotBlank())
@@ -96,7 +96,7 @@ fun SelectCuisinesScreen(
                 text = "Others",
                 clickable = {
                     if (showOtherCuisineTextField) {
-                        authViewModel.otherCuisine.value = ""
+                        userViewModel.otherCuisine.value = ""
                     }
                     showOtherCuisineTextField = !showOtherCuisineTextField
                 },
@@ -106,7 +106,7 @@ fun SelectCuisinesScreen(
                 FormTextField(
                     value = otherCuisine,
                     onValueChange = {
-                        authViewModel.otherCuisine.value = it
+                        userViewModel.otherCuisine.value = it
                     },
                     textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(),
                     placeholder = "Please specify"
