@@ -1,5 +1,6 @@
 package com.samsantech.souschef.ui
 
+import android.util.Patterns
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,13 +30,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samsantech.souschef.ui.components.FormOutlinedTextField
 import com.samsantech.souschef.ui.components.ColoredButton
+import com.samsantech.souschef.ui.components.ErrorText
+import com.samsantech.souschef.ui.components.ProgressSpinner
+import com.samsantech.souschef.ui.components.SuccessDialog
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
+import com.samsantech.souschef.viewmodel.AuthViewModel
 
 @Composable
-fun ForgotPasswordScreen(
+fun ResetPasswordScreen(
+    authViewModel: AuthViewModel,
     onNavigateToLogin: () -> Unit
 ) {
+    var email by remember {
+        mutableStateOf("")
+    }
+    var error by remember {
+        mutableStateOf("")
+    }
+    var loading by remember {
+        mutableStateOf(false)
+    }
+    var success by remember {
+        mutableStateOf(false)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -43,7 +66,7 @@ fun ForgotPasswordScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Login",
+                text = "Reset Password",
                 color = Color(0xFF16A637),
                 fontSize = 32.sp,
                 fontFamily = Konkhmer_Sleokcher,
@@ -58,19 +81,41 @@ fun ForgotPasswordScreen(
             Text(text = "Please enter the email associated with your account.", textAlign = TextAlign.Center)
 
             FormOutlinedTextField(
-                value = "Hello",
-                onValueChange = {},
+                value = email,
+                onValueChange = {
+                    error = ""
+                    email = it
+                },
                 label = "Email",
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Filled.Email,
-                        contentDescription = "email icon"
+                        contentDescription = null
                     )
                 },
             )
+            if (error.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(10.dp))
+                ErrorText(text = error)
+            }
             Spacer(modifier = Modifier.height(20.dp))
             ColoredButton(
-                onClick = {  },
+                onClick = {
+                    if (email.isNotEmpty() ) {
+                        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                            error = "Please provide a valid email address."
+                        } else {
+                            loading = true
+                            authViewModel.resetPassword(email) { isSuccess, errorMessage ->
+                                loading = false
+                                success = isSuccess
+                                if (errorMessage != null) {
+                                    error = errorMessage
+                                }
+                            }
+                        }
+                    }
+                },
                 text = "Send Code"
             )
         }
@@ -91,5 +136,17 @@ fun ForgotPasswordScreen(
                 border = BorderStroke(1.dp, Color.Black)
             )
         }
+    }
+
+    if (loading) {
+        ProgressSpinner()
+    }
+    if (success) {
+        SuccessDialog(
+            message = "Reset Link Sent",
+            subMessage = "If this email is registered, you will receive a password reset email.",
+            buttonName = "Okay",
+            onClick = onNavigateToLogin
+        )
     }
 }

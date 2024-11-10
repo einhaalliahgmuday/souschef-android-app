@@ -32,6 +32,12 @@ class AuthViewModel(
         }
     }
 
+    fun resetPassword(email: String, callback: (Boolean, String?) -> Unit) {
+        firebaseAuthManager.sendResetEmail(email) { isSuccess, error ->
+            callback(isSuccess, error)
+        }
+    }
+
     fun setUserPreferences(isSuccess: (Boolean) -> Unit) {
         signUpPreferences.value.cuisines = signUpPreferences.value.cuisines?.plus(otherCuisine.value)
         firebaseUserManager.createUserPreferences(signUpPreferences.value) {

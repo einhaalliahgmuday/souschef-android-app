@@ -3,6 +3,7 @@ package com.samsantech.souschef.ui
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -125,25 +126,25 @@ fun LoginScreen(
                 isPasswordVisualTransformation = isPasswordVisualTransformation
             )
             if (loginError.isNotBlank()) {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 Text(text = loginError, fontSize = 14.sp, color = Color.Red, modifier = Modifier.fillMaxWidth())
             }
             Spacer(modifier = Modifier.height(16.dp))
-//            Box(
-//                modifier = Modifier.fillMaxWidth(),
-//            ) {
-//                Text(
-//                    text = "Forgot Password?",
-//                    color = Color.Red,
-//                    fontSize = 12.sp,
-//                    modifier = Modifier
-//                        .clickable (
-//                            onClick = onNavigateToForgotPassword
-//                        )
-//                        .align(Alignment.CenterEnd)
-//                )
-//            }
-//            Spacer(modifier = Modifier.height(20.dp))
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = "Forgot Password?",
+                    color = Color.Red,
+                    fontSize = 12.sp,
+                    modifier = Modifier
+                        .clickable (
+                            onClick = onNavigateToForgotPassword
+                        )
+                        .align(Alignment.CenterEnd)
+                )
+            }
+            Spacer(modifier = Modifier.height(20.dp))
             ColoredButton(
                 onClick = {
                     if (email.isNotEmpty() && password.isNotEmpty())

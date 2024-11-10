@@ -69,4 +69,16 @@ class FirebaseAuthManager(
             }
         }
     }
+
+    fun sendResetEmail(email: String, callback: (Boolean, String?) -> Unit) {
+        auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    callback(true, null)
+                } else {
+                    println(task.exception)
+                    callback(false, getErrorMessage(task.exception))
+                }
+            }
+    }
 }
