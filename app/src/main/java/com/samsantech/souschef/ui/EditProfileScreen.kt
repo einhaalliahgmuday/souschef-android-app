@@ -35,6 +35,7 @@ import com.samsantech.souschef.ui.components.Header
 import com.samsantech.souschef.ui.components.ProgressSpinner
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
+import com.samsantech.souschef.utils.isValidUsername
 import com.samsantech.souschef.viewmodel.AuthViewModel
 import com.samsantech.souschef.viewmodel.UserViewModel
 
@@ -116,10 +117,14 @@ fun EditProfileScreen(
                                 username = valueChange
 
                                 if (valueChange.isNotBlank() && valueChange != user!!.username) {
-                                    userViewModel.isUsernameExists(valueChange) {
-                                        if (it) {
+                                    userViewModel.isUsernameExists(valueChange) { isExists ->
+                                        if (isExists) {
                                             error = "Username is already taken."
                                         }
+                                    }
+
+                                    if (!isValidUsername(valueChange)) {
+                                        error = "Username must only contain letters, numbers, underscore, and dot."
                                     }
                                 }
                             },

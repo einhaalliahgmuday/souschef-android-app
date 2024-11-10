@@ -1,6 +1,8 @@
 package com.samsantech.souschef.ui
 
+import android.content.Context
 import android.util.Patterns
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,11 +38,13 @@ import com.samsantech.souschef.ui.components.ProgressSpinner
 import com.samsantech.souschef.ui.components.SuccessDialog
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
+import com.samsantech.souschef.utils.isValidUsername
 import com.samsantech.souschef.viewmodel.AuthViewModel
 import com.samsantech.souschef.viewmodel.UserViewModel
 
 @Composable
 fun SignUpScreen(
+    context: Context,
     authViewModel: AuthViewModel,
     userViewModel: UserViewModel,
     onNavigateToSelectCuisines: () -> Unit,
@@ -120,6 +124,10 @@ fun SignUpScreen(
                                 errorUsername = "Username is already taken."
                             }
                         }
+
+                        if (!isValidUsername(valueChange)) {
+                            errorUsername = "Username must only contain letters, numbers, underscore, and dot."
+                        }
                     }
                 },
                 label = "Username",
@@ -195,8 +203,10 @@ fun SignUpScreen(
 
                     if (errorUsername.isEmpty() && errorEmail.isEmpty() && errorPassword.isEmpty()) {
                         loading = true
-                        authViewModel.signUp {
+                        authViewModel.signUp { _, error ->
                             loading = false
+                            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+
                             userViewModel.refreshUser()
                             success = true
 

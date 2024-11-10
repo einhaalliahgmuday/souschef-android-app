@@ -70,20 +70,19 @@ class FirebaseUserManager(private val auth: FirebaseAuth, private val db: Fireba
                             user.reload()
                         }
                     }
+            }
+            if (username != null) {
+                val updatedUser = hashMapOf(
+                    "username" to username,
+                )
 
-                if (username != null) {
-                    val updatedUser = hashMapOf(
-                        "username" to username,
-                    )
-
-                    db.collection("users")
-                        .document(user.uid)
-                        .set(updatedUser)
-                        .addOnSuccessListener {
-                            callback(true, null)
-                            user.reload()
-                        }
-                }
+                db.collection("users")
+                    .document(user.uid)
+                    .set(updatedUser)
+                    .addOnSuccessListener {
+                        callback(true, null)
+                        user.reload()
+                    }
             }
         }
     }

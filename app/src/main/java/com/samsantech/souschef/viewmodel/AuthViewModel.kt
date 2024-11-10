@@ -2,12 +2,10 @@ package com.samsantech.souschef.viewmodel
 
 import com.samsantech.souschef.data.User
 import com.samsantech.souschef.firebase.FirebaseAuthManager
-import com.samsantech.souschef.firebase.FirebaseUserManager
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class AuthViewModel(
     private val firebaseAuthManager: FirebaseAuthManager,
-    private val firebaseUserManager: FirebaseUserManager
 ) {
     val signUpInformation = MutableStateFlow<User>(User())
 
@@ -21,9 +19,9 @@ class AuthViewModel(
         firebaseAuthManager.logout()
     }
 
-    fun signUp(isSuccess: (Boolean) -> Unit) {
-        firebaseAuthManager.signUp(signUpInformation.value) {
-            isSuccess(it)
+    fun signUp(isSuccess: (Boolean, String?) -> Unit) {
+        firebaseAuthManager.signUp(signUpInformation.value) { success, error ->
+            isSuccess(success, error)
         }
     }
 

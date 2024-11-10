@@ -35,10 +35,9 @@ class UserViewModel(
                                 photoUrl = currentUser.photoUrl.toString()
                             )
                         }
-                    }!!
+                    }
                 }
             }
-            println(currentUser.email)
         } else {
             user.value = null
         }

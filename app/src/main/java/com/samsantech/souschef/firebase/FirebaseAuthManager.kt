@@ -13,13 +13,20 @@ class FirebaseAuthManager(
         return auth.currentUser
     }
 
-    fun signUp(user: User, isSuccess: (Boolean) -> Unit) {
+    fun signUp(user: User, isSuccess: (Boolean, String?) -> Unit) {
         auth.createUserWithEmailAndPassword(user.email, user.password)
             .addOnSuccessListener {
+                var error: String? = null
+
                 val signedUpUser = getCurrentUser()
                 if (signedUpUser != null) {
+                    firebaseUserManager.updateProfile(newDisplayName = user.displayName) { _, errorMessage ->
+                        if (errorMessage != null) {
+                            error = errorMessage
+                        }
+                    }
                     firebaseUserManager.createUser(signedUpUser.uid, user.email, user.username) {
-                        isSuccess(true)
+                        isSuccess(true, error)
                     }
                 }
             }
