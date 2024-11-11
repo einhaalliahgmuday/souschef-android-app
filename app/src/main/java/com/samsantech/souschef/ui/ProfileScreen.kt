@@ -120,7 +120,7 @@ fun ProfileScreen(
                         .clickable { showProfileImage = true },
                     contentAlignment = Alignment.Center
                 ) {
-                    if (user?.photoUrl != null) {
+                    if (user?.photoUrl !== null) {
                         AsyncImage(
                             model = "${user!!.photoUrl}",
                             contentDescription = null,

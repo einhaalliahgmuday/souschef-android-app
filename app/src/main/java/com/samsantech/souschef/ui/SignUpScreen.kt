@@ -1,8 +1,6 @@
 package com.samsantech.souschef.ui
 
-import android.content.Context
 import android.util.Patterns
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,7 +42,6 @@ import com.samsantech.souschef.viewmodel.UserViewModel
 
 @Composable
 fun SignUpScreen(
-    context: Context,
     authViewModel: AuthViewModel,
     userViewModel: UserViewModel,
     onNavigateToSelectCuisines: () -> Unit,
@@ -67,6 +64,9 @@ fun SignUpScreen(
         mutableStateOf("")
     }
     var errorPassword by remember {
+        mutableStateOf("")
+    }
+    var error by remember {
         mutableStateOf("")
     }
 
@@ -97,6 +97,7 @@ fun SignUpScreen(
             FormOutlinedTextField(
                 value = signUpInformation.displayName,
                 onValueChange = { valueChange ->
+                    error = ""
                     errorDisplayName = ""
                     authViewModel.setSignUpInformation(displayName = valueChange)
                 },
@@ -115,6 +116,7 @@ fun SignUpScreen(
             FormOutlinedTextField(
                 value = signUpInformation.username,
                 onValueChange = { valueChange ->
+                    error = ""
                     errorUsername = ""
                     authViewModel.setSignUpInformation(username = valueChange)
 
@@ -145,6 +147,7 @@ fun SignUpScreen(
             FormOutlinedTextField(
                 value = signUpInformation.email,
                 onValueChange = { valueChange ->
+                    error = ""
                     errorEmail = ""
                     authViewModel.setSignUpInformation(email = valueChange)
 
@@ -171,6 +174,7 @@ fun SignUpScreen(
             PasswordOutlinedTextField(
                 value = signUpInformation.password,
                 onValueChange = {
+                    error = ""
                     errorPassword = ""
                     authViewModel.setSignUpInformation(password = it)
                 },
@@ -178,6 +182,10 @@ fun SignUpScreen(
             )
             if (errorPassword.isNotBlank()) {
                 Text(text = errorPassword, fontSize = 14.sp, color = Color.Red, modifier = Modifier.fillMaxWidth())
+            }
+            if (error.isNotBlank()) {
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(text = error, fontSize = 14.sp, color = Color.Red, modifier = Modifier.fillMaxWidth())
             }
             Spacer(modifier = Modifier.height(16.dp))
             ColoredButton(
@@ -201,15 +209,18 @@ fun SignUpScreen(
                         errorPassword = "Password must be at least 8 characters long, contain a number, an uppercase letter, and a special character."
                     }
 
-                    if (errorUsername.isEmpty() && errorEmail.isEmpty() && errorPassword.isEmpty()) {
+                    if (errorUsername.isEmpty() && errorEmail.isEmpty() && errorPassword.isEmpty() && error.isEmpty()) {
                         loading = true
-                        authViewModel.signUp { _, error ->
+                        authViewModel.signUp { isSuccess, errorMessage ->
                             loading = false
-                            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                            if (errorMessage != null) {
+                                error = errorMessage
+                            }
 
-                            userViewModel.refreshUser()
-                            success = true
-
+                            if (isSuccess) {
+                                userViewModel.refreshUser()
+                                success = true
+                            }
                         }
                     }
                 },

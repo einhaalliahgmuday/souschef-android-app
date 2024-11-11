@@ -11,6 +11,9 @@ fun getErrorMessage(exception: Exception?): String {
         is com.google.firebase.FirebaseTooManyRequestsException -> {
             "Too many requests. Please try again later."
         }
+        is com.google.firebase.auth.FirebaseAuthUserCollisionException -> {
+            "The email is already taken."
+        }
         else -> {
             "An error occurred. Please try again."
         }

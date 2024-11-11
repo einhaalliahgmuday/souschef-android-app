@@ -89,7 +89,6 @@ fun SousChefApp(
             }
             composable<SignUp> {
                 SignUpScreen(
-                    context,
                     authViewModel = authViewModel,
                     userViewModel,
                     onNavigateToSelectCuisines = { navController.navigate(route = SelectCuisines) },
