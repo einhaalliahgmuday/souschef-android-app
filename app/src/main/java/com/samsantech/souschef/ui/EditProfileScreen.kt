@@ -30,6 +30,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samsantech.souschef.ui.components.ColoredButton
+import com.samsantech.souschef.ui.components.ConfirmDialog
 import com.samsantech.souschef.ui.components.FormOutlinedTextField
 import com.samsantech.souschef.ui.components.Header
 import com.samsantech.souschef.ui.components.ProgressSpinner
@@ -62,6 +63,9 @@ fun EditProfileScreen(
         mutableStateOf("")
     }
     var loading by remember {
+        mutableStateOf(false)
+    }
+    var showLogoutConfirmation by remember {
         mutableStateOf(false)
     }
 
@@ -180,22 +184,19 @@ fun EditProfileScreen(
                         onClick = onNavigateToUpdateEmail,
                         containerColor = Color.White, contentColor = Green,
                         text = "Update Email",
-                        border = BorderStroke(1.dp, Color.Black)
+                        border = BorderStroke(1.dp, Green)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     ColoredButton(
                         onClick = onNavigateToChangePassword,
                         containerColor = Color.White, contentColor = Green,
                         text = "Change Password",
-                        border = BorderStroke(1.dp, Color.Black)
+                        border = BorderStroke(1.dp, Green)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     ColoredButton(
                         onClick = {
-                            loading = true
-                            authViewModel.logout()
-                            loading = false
-                            onNavigateToLogin()
+                            showLogoutConfirmation = true
                         },
                         containerColor = Color.Red, contentColor = Color.White,
                         text = "Logout",
@@ -207,6 +208,20 @@ fun EditProfileScreen(
 
         if (loading) {
             ProgressSpinner()
+        }
+
+        if (showLogoutConfirmation) {
+            ConfirmDialog(
+                message = "Are you sure you want to logout?",
+                buttonOkayName = "Yes",
+                onClickCancel = { showLogoutConfirmation = false },
+                onClickOkay = {
+                    loading = true
+                    authViewModel.logout()
+                    loading = false
+                    onNavigateToLogin()
+                }
+            )
         }
     }
 }

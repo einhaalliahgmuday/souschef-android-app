@@ -44,7 +44,7 @@ import com.samsantech.souschef.viewmodel.UserViewModel
 fun SignUpScreen(
     authViewModel: AuthViewModel,
     userViewModel: UserViewModel,
-    onNavigateToSelectCuisines: () -> Unit,
+    onNavigateToVerifyEmail: () -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
     val signUpInformation by authViewModel.signUpInformation.collectAsState()
@@ -209,7 +209,7 @@ fun SignUpScreen(
                         errorPassword = "Password must be at least 8 characters long, contain a number, an uppercase letter, and a special character."
                     }
 
-                    if (errorUsername.isEmpty() && errorEmail.isEmpty() && errorPassword.isEmpty() && error.isEmpty()) {
+                    if (errorDisplayName.isEmpty() && errorUsername.isEmpty() && errorEmail.isEmpty() && errorPassword.isEmpty() && error.isEmpty()) {
                         loading = true
                         authViewModel.signUp { isSuccess, errorMessage ->
                             loading = false
@@ -219,6 +219,7 @@ fun SignUpScreen(
 
                             if (isSuccess) {
                                 userViewModel.refreshUser()
+                                authViewModel.setSignUpInformation()
                                 success = true
                             }
                         }
@@ -255,7 +256,15 @@ fun SignUpScreen(
             message = "Sign up successful!",
             subMessage = "Your account has been created.",
             buttonName = "Continue",
-            onClick = onNavigateToSelectCuisines
+            onClick = {
+                authViewModel.logout()
+                authViewModel.sendEmailVerification() { _, errorMessage ->
+                    if (errorMessage != null) {
+                        println(errorMessage)
+                    }
+                }
+                onNavigateToVerifyEmail()
+            }
         )
     }
 }

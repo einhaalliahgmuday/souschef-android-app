@@ -28,6 +28,8 @@ import com.samsantech.souschef.ui.SelectSkillLevelScreen
 import com.samsantech.souschef.ui.SignUpOrLoginScreen
 import com.samsantech.souschef.ui.SignUpScreen
 import com.samsantech.souschef.ui.UpdateEmailScreen
+import com.samsantech.souschef.ui.VerifyEmailScreen
+import com.samsantech.souschef.ui.components.ContentBottomNavigationWrapper
 import com.samsantech.souschef.viewmodel.AuthViewModel
 import com.samsantech.souschef.viewmodel.UserViewModel
 import kotlinx.serialization.Serializable
@@ -43,9 +45,9 @@ fun SousChefApp(
     Box {
         val navController = rememberNavController()
 
-        NavHost(navController = navController, startDestination = Opening) {
+        NavHost(navController = navController, startDestination = CreateRecipeTwo) {
             composable<Opening> {
-                var afterOpening: Any = Login
+                var afterOpening: Any = GetStarted
                 if (user != null) {
                     afterOpening = Profile
                 }
@@ -71,8 +73,25 @@ fun SousChefApp(
                     authViewModel,
                     userViewModel,
                     onNavigateToSignUp = { navController.navigate(route = SignUp) },
+                    onNavigateToVerifyEmail = { navController.navigate(route = VerifyEmail) },
                     onNavigateToForgotPassword = { navController.navigate(route = ResetPassword) },
-                    onNavigateToHome = { navController.navigate(route = Profile) }
+                    onNavigateToHome = {
+                        navController.navigate(route = Profile) {
+                            popUpTo(Profile) { inclusive = true }
+                        }
+                    },
+                    onNavigateToSelectCuisines = {
+                        navController.navigate(route = SelectCuisines) {
+                            popUpTo(SelectCuisines) { inclusive = true }
+                        }
+                    }
+                )
+            }
+            composable<VerifyEmail> {
+                VerifyEmailScreen(
+                    userViewModel,
+                    authViewModel,
+                    onNavigateToLogin = { navController.navigate(route = Login) }
                 )
             }
             composable<ResetPassword> {
@@ -84,14 +103,22 @@ fun SousChefApp(
             composable<ChangePassword> {
                 ChangePasswordScreen(
                     authViewModel,
-                    onNavigateToEditProfile = { navController.navigate(route = EditProfile) }
+                    onNavigateToEditProfile = {
+                        navController.navigate(route = EditProfile) {
+                            popUpTo(EditProfile) { inclusive = true }
+                        }
+                    }
                 )
             }
             composable<SignUp> {
                 SignUpScreen(
                     authViewModel = authViewModel,
                     userViewModel,
-                    onNavigateToSelectCuisines = { navController.navigate(route = SelectCuisines) },
+                    onNavigateToVerifyEmail = {
+                        navController.navigate(route = VerifyEmail) {
+                            popUpTo(VerifyEmail) { inclusive = true }
+                        }
+                    },
                     onNavigateToLogin = { navController.navigate(route = Login) },
                 )
             }
@@ -113,7 +140,11 @@ fun SousChefApp(
                 SelectSkillLevelScreen(
                     userViewModel = userViewModel,
                     onNavigateToSelectDislikes = { navController.navigate(route = SelectDislikes) },
-                    onNavigateToHome = { navController.navigate(route = Home) },
+                    onNavigateToHome = {
+                        navController.navigate(route = Profile) {
+                            popUpTo(Profile) { inclusive = true }
+                        }
+                    },
                 )
             }
             composable<EditProfile> {
@@ -121,31 +152,76 @@ fun SousChefApp(
                     context,
                     authViewModel = authViewModel,
                     userViewModel = userViewModel,
-                    onNavigateToProfile = { navController.navigate(route = Profile) },
+                    onNavigateToProfile = {
+                        navController.navigate(route = Profile) {
+                            popUpTo(Profile) { inclusive = true }
+                        }
+                    },
                     onNavigateToUpdateEmail = { navController.navigate(route = UpdateEmail)},
                     onNavigateToChangePassword = { navController.navigate(route = ChangePassword) },
-                    onNavigateToLogin = { navController.navigate(route = Login) }
+                    onNavigateToLogin = {
+                        navController.navigate(route = Login) {
+                            popUpTo(Login) { inclusive = true }
+                        }
+                    }
                 )
             }
             composable<UpdateEmail> {
                 UpdateEmailScreen(
+                    authViewModel,
                     userViewModel,
-                    onNavigateToEditProfile = {
-                        navController.navigate(route = EditProfile) {
-                            popUpTo(EditProfile) { inclusive = true }
+                    onNavigateToLogin = {
+                        navController.navigate(route = Login) {
+                            popUpTo(Login) { inclusive = true }
                         }
                     }
                 )
             }
             composable<Home> {
-                HomeScreen()
+                ContentBottomNavigationWrapper(
+                    name = "Home",
+                    onNavigateToHome = {
+                        navController.navigate(route = Home)
+                    },
+                    onNavigateToCreateRecipe = {
+                        navController.navigate(route = CreateRecipeOne)
+                    },
+                    onNavigateToSearch = {
+                        navController.navigate(route = Profile)
+                    },
+                    onNavigateToProfile = {
+                        navController.navigate(route = Profile) {
+                            popUpTo(Profile) { inclusive = true }
+                        }
+                    },
+                ) { paddingValues ->
+                    HomeScreen(paddingValues)
+                }
             }
             composable<Profile> {
-                ProfileScreen(
-                    context,
-                    userViewModel,
-                    onNavigateToEditProfile = { navController.navigate(route = EditProfile) }
-                )
+                ContentBottomNavigationWrapper(
+                    name = "Profile",
+                    onNavigateToHome = {
+                        navController.navigate(route = Home)
+                    },
+                    onNavigateToCreateRecipe = {
+                        navController.navigate(route = CreateRecipeOne)
+                    },
+                    onNavigateToSearch = {
+                        navController.navigate(route = Profile)
+                    },
+                    onNavigateToProfile = {
+                        navController.navigate(route = Profile) {
+                            popUpTo(Profile) { inclusive = true }
+                        }
+                    },
+                ) { paddingValues ->
+                    ProfileScreen(
+                        context,
+                        userViewModel,
+                        onNavigateToEditProfile = { navController.navigate(route = EditProfile) }
+                    )
+                }
             }
             composable<SelectCategory> {
                 SelectCategoryScreen()
@@ -157,7 +233,7 @@ fun SousChefApp(
                 RecipeScreen()
             }
             composable<CreateRecipeOne> {
-                CreateRecipeScreenOne()
+                CreateRecipeScreenOne(context)
             }
             composable<CreateRecipeTwo> {
                 CreateRecipeScreenTwo()
@@ -192,6 +268,9 @@ object SelectSkillLevel
 
 @Serializable
 object Login
+
+@Serializable
+object VerifyEmail
 
 @Serializable
 object ResetPassword

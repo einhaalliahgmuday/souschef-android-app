@@ -28,20 +28,22 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samsantech.souschef.ui.components.ColoredButton
+import com.samsantech.souschef.ui.components.ConfirmDialog
 import com.samsantech.souschef.ui.components.ErrorText
 import com.samsantech.souschef.ui.components.FormOutlinedTextField
 import com.samsantech.souschef.ui.components.Header
 import com.samsantech.souschef.ui.components.PasswordOutlinedTextField
 import com.samsantech.souschef.ui.components.ProgressSpinner
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
+import com.samsantech.souschef.viewmodel.AuthViewModel
 import com.samsantech.souschef.viewmodel.UserViewModel
 
 @Composable
 fun UpdateEmailScreen(
+    authViewModel: AuthViewModel,
     userViewModel: UserViewModel,
-    onNavigateToEditProfile: () -> Unit,
+    onNavigateToLogin: () -> Unit,
 ) {
-
     val user by userViewModel.user.collectAsState()
 
     var email by remember {
@@ -57,6 +59,9 @@ fun UpdateEmailScreen(
         mutableStateOf("")
     }
     var loading by remember {
+        mutableStateOf(false)
+    }
+    var showConfirmDialog by remember {
         mutableStateOf(false)
     }
 
@@ -92,6 +97,7 @@ fun UpdateEmailScreen(
                         FormOutlinedTextField(
                             value = it,
                             onValueChange = { valueChange ->
+                                error = ""
                                 errorEmail = ""
                                 email = valueChange
 
@@ -112,6 +118,7 @@ fun UpdateEmailScreen(
                             },
                         )
                     }
+                    Spacer(modifier = Modifier.height(10.dp))
                     if (errorEmail.isNotBlank()) {
                         ErrorText(text = errorEmail)
                     }
@@ -131,6 +138,9 @@ fun UpdateEmailScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     ColoredButton(
                         onClick = {
+                            if (email == user!!.email) {
+                                error = "Please provide a new email."
+                            }
                             if (!email?.let { Patterns.EMAIL_ADDRESS.matcher(it).matches() }!!) {
                                 errorEmail = "Email must be valid format."
                             }
@@ -140,24 +150,39 @@ fun UpdateEmailScreen(
                             }
 
                             if (errorEmail.isEmpty() && error.isEmpty()) {
-                                loading = true
-
-                                userViewModel.updateEmail(email!!, password) { isSuccess, errorMessage ->
-                                    loading = false
-
-                                    if (isSuccess) {
-                                        onNavigateToEditProfile()
-                                    } else {
-                                        if (errorMessage != null) {
-                                            error = errorMessage
-                                        }
-                                    }
-                                }
+                                showConfirmDialog = true
                             }
                         },
                         text = "Save"
                     )
                 }
+            }
+        }
+
+        if (showConfirmDialog) {
+            ConfirmDialog(
+                message = "Are you sure?",
+                subMessage = "You will be logged out to verify your email.",
+                buttonOkayName = "Update",
+                onClickCancel = { showConfirmDialog = false }) {
+                    loading = true
+
+                    userViewModel.updateEmail(email!!, password) { isSuccess, errorMessage ->
+                        loading = false
+
+                        if (isSuccess) {
+                            authViewModel.sendEmailVerification() { _, _ ->
+                                println()
+                            }
+                            authViewModel.logout()
+                            onNavigateToLogin()
+                        } else {
+                            showConfirmDialog = false
+                            if (errorMessage != null) {
+                                error = errorMessage
+                            }
+                        }
+                    }
             }
         }
 

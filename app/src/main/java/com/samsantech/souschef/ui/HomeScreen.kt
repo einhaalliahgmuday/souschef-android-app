@@ -1,22 +1,19 @@
 package com.samsantech.souschef.ui
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -32,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -54,70 +49,79 @@ import com.samsantech.souschef.ui.components.FormOutlinedTextField
 import kotlinx.coroutines.delay
 
 @Composable
-fun HomeScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+fun HomeScreen(paddingValues: PaddingValues) {
+//    BackHandler {
+//        activity.finish()
+//    }
+//    Scaffold(
+//        bottomBar = {
+//            BottomNavigationBar()
+//        }
+//    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(paddingValues)
 //            .pointerInput(Unit) {
 //                detectTapGestures {
 //                    isFocused = false
 //                    isExpanded = false
 //                }
 //            }
-    ) {
-        Spacer(
-            modifier = Modifier
-                .background(Color(22, 166, 55, 255))
-                .fillMaxWidth()
-                .height(250.dp)
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = 50.dp, start = 20.dp, end = 20.dp,
-//                    bottom = if (cookingAssistantState.isCooking) 110.dp else 20.dp
-                )
         ) {
-            Row(
+            Spacer(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .background(Color(22, 166, 55, 255))
+                    .fillMaxWidth()
+                    .height(250.dp)
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = 50.dp, start = 20.dp, end = 20.dp,
+//                    bottom = if (cookingAssistantState.isCooking) 110.dp else 20.dp
+                    )
             ) {
-                Text(
-                    text = "SOUSCHEF",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight(700),
-                    color = Color(255, 207, 81, 255)
-                )
-                Icon(
-                    imageVector = Icons.Filled.Menu,
-                    contentDescription = null,
-                    tint = Color.White,
+                Row(
                     modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "SOUSCHEF",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight(700),
+                        color = Color(255, 207, 81, 255)
+                    )
+                    Icon(
+                        imageVector = Icons.Filled.Menu,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier
 //                        .padding(end = 10.dp)
-                        .size(40.dp)
+                            .size(40.dp)
 //                        .clickable { isExpanded = true }
-                )
-            }
+                    )
+                }
 
 
-            Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-            var searchInput by remember {
-                mutableStateOf("")
-            }
+                var searchInput by remember {
+                    mutableStateOf("")
+                }
 
 //            SearchBar()
-            FormOutlinedTextField(value = "", onValueChange = {}, )
+                FormOutlinedTextField(value = "", onValueChange = {}, )
 
-            Box {
-                Column {
-                    Spacer(modifier = Modifier.height(20.dp))
+                Box {
+                    Column {
+                        Spacer(modifier = Modifier.height(20.dp))
 //                    ImageSlider(context, allRecipes, onNavigateToRecipe)
-                }
+                    }
 //                var searchResults by remember { mutableStateOf(emptyList<Recipe>()) }
 
 //                recipeViewModel.getSearchRecipesResults(searchInput) { recipes ->
@@ -140,14 +144,15 @@ fun HomeScreen() {
 //                    }
 //                }
 
+                }
+
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                RecipeCategoriesList()
             }
-
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            RecipeCategoriesList()
         }
-    }
+//    }
 }
 
 @Composable
@@ -437,7 +442,7 @@ fun RecipeCategoryCard(imageRes: Int, categoryName: String) {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(10.dp))
-            .clickable {  }) {
+            .clickable { }) {
 //        onNavigateToRecipeBrowser(categoryName)
         Row(
             modifier = Modifier

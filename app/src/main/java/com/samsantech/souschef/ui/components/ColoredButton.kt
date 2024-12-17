@@ -13,20 +13,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samsantech.souschef.ui.theme.Green
-import com.samsantech.souschef.ui.theme.Yellow
 
 @Composable
 fun ColoredButton(modifier: Modifier = Modifier, onClick: () -> Unit, containerColor: Color = Green, contentColor: Color = Color.White,
-                  text: String, border: BorderStroke = BorderStroke(0.dp, Color.Transparent), contentPadding: PaddingValues = PaddingValues(12.dp, 12.dp),
+                  text: String, border: BorderStroke = BorderStroke(0.dp, Color.Transparent), shadowElevation: Dp = 1.dp,
+                  contentPadding: PaddingValues = PaddingValues(12.dp, 12.dp), fontWeight: FontWeight = FontWeight.SemiBold,
 ) {
     Button(
         modifier = modifier
             .fillMaxWidth()
             .border(border, RoundedCornerShape(20))
-            .shadow(2.dp, RoundedCornerShape(20)),
+            .shadow(shadowElevation, RoundedCornerShape(20)),
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
@@ -37,7 +38,7 @@ fun ColoredButton(modifier: Modifier = Modifier, onClick: () -> Unit, containerC
     ) {
         Text(text = text,
             fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = fontWeight
         )
     }
 }

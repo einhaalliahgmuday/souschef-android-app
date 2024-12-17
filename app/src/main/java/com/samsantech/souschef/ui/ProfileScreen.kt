@@ -4,17 +4,12 @@ import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.ImageDecoder
 import android.net.Uri
-import android.os.Build
 import android.provider.MediaStore
 import android.widget.Toast
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,7 +26,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -50,21 +44,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.samsantech.souschef.R
 import com.samsantech.souschef.ui.components.ColoredButton
 import com.samsantech.souschef.ui.components.DisplayProfileImage
 import com.samsantech.souschef.ui.components.Header
 import com.samsantech.souschef.ui.components.ProgressSpinner
+import com.samsantech.souschef.ui.components.UploadImagePopUp
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
+import com.samsantech.souschef.utils.convertUriToBitmap
 import com.samsantech.souschef.viewmodel.UserViewModel
 
 
@@ -102,37 +95,27 @@ fun ProfileScreen(
         }
     }
 
-    Column {
-        Header()
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box {
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(133.dp)
-                        .background(Color.LightGray)
-                        .clickable { showProfileImage = true },
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (user?.photoUrl !== null) {
+    Box {
+        Column {
+            Header()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box {
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(133.dp)
+                            .background(Color.LightGray)
+                            .clickable { showProfileImage = true },
+                        contentAlignment = Alignment.Center
+                    ) {
                         AsyncImage(
-                            model = "${user!!.photoUrl}",
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .size(130.dp)
-                                .background(Color.White)
-                        )
-                    } else {
-                        Image(
-                            painter = painterResource(id = R.drawable.blank_profile),
+                            model = "${user?.photoUrl}",
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -141,81 +124,82 @@ fun ProfileScreen(
                                 .background(Color.White)
                         )
                     }
-                }
-                IconButton(
-                    onClick = {
-                        showGetImageOptions = true
-                    },
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(Color(0xFFFFD600))
-                        .align(Alignment.BottomEnd)
-                        .size(40.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = null,
-                        tint = Color.Black,
+                    IconButton(
+                        onClick = {
+                            showGetImageOptions = true
+                        },
                         modifier = Modifier
-                            .size(20.dp)
-                    )
+                            .clip(CircleShape)
+                            .background(Color(0xFFFFD600))
+                            .align(Alignment.BottomEnd)
+                            .size(40.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Edit,
+                            contentDescription = null,
+                            tint = Color.Black,
+                            modifier = Modifier
+                                .size(20.dp)
+                        )
+                    }
                 }
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            user?.let {
-                Text(
-                    text = it.displayName,
-                    fontFamily = Konkhmer_Sleokcher,
-                    fontSize = 20.sp,
-                    color = Color(0xFF16A637),
-                    style = LocalTextStyle.current.merge(
-                        TextStyle(
-                            platformStyle = PlatformTextStyle(
-                                includeFontPadding = false
-                            ),
+                Spacer(modifier = Modifier.height(10.dp))
+                user?.let {
+                    Text(
+                        text = it.displayName,
+                        fontFamily = Konkhmer_Sleokcher,
+                        fontSize = 20.sp,
+                        color = Color(0xFF16A637),
+                        style = LocalTextStyle.current.merge(
+                            TextStyle(
+                                platformStyle = PlatformTextStyle(
+                                    includeFontPadding = false
+                                ),
+                            )
                         )
                     )
-                )
-            }
-            user?.let {
-                Text(
-                    text = it.username,
-                    fontStyle = FontStyle.Italic
-                )
-            }
-            user?.let {
-                Text(
-                    text = it.email
-                )
-            }
-            Spacer(modifier = Modifier.height(12.dp))
+                }
+                user?.let {
+                    Text(
+                        text = it.username,
+                        fontStyle = FontStyle.Italic
+                    )
+                }
+                user?.let {
+                    Text(
+                        text = it.email
+                    )
+                }
+                Spacer(modifier = Modifier.height(12.dp))
 
-            ColoredButton(onClick = onNavigateToEditProfile, text = "Settings")
-            Spacer(modifier = Modifier.height(8.dp))
+                ColoredButton(onClick = onNavigateToEditProfile, text = "Settings")
+                Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                ColoredButton(
-                    onClick = {  },
-                    text = "Your Recipes",
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(12.dp, 12.dp),
-                    containerColor = Color.White, contentColor = Green,
-                    border = BorderStroke(1.dp, Color(0xFF16A637))
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                ColoredButton(
-                    onClick = {  },
-                    text = "Favorites",
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(12.dp, 12.dp),
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    ColoredButton(
+                        onClick = {  },
+                        text = "Your Recipes",
+                        modifier = Modifier.weight(1f),
+                        contentPadding = PaddingValues(12.dp, 12.dp),
+                        containerColor = Color.White, contentColor = Green,
+                        border = BorderStroke(1.dp, Color(0xFF16A637))
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    ColoredButton(
+                        onClick = {  },
+                        text = "Favorites",
+                        modifier = Modifier.weight(1f),
+                        contentPadding = PaddingValues(12.dp, 12.dp),
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
             }
-            Spacer(modifier = Modifier.height(20.dp))
         }
     }
+
     if (showGetImageOptions) {
         UploadImagePopUp(launcher = activityResultLauncher, isClicked = {
             if (it) {
@@ -226,14 +210,7 @@ fun ProfileScreen(
 
     if (imageUri != null)
     {
-        val bitmap: Bitmap?
-
-        if (Build.VERSION.SDK_INT < 28) {
-            bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri!!)
-        } else {
-            val source = ImageDecoder.createSource(context.contentResolver, imageUri!!)
-            bitmap = ImageDecoder.decodeBitmap(source)
-        }
+        val bitmap: Bitmap? = convertUriToBitmap(context, imageUri!!)
 
         if (bitmap != null) {
             DisplayProfileImage(
@@ -276,56 +253,5 @@ fun ProfileScreen(
 
     if (loading) {
         ProgressSpinner()
-    }
-}
-
-@Composable
-fun UploadImagePopUp(isClicked: (Boolean) -> Unit, launcher: ManagedActivityResultLauncher<Intent, ActivityResult>) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Gray.copy(.4f))
-            .clickable {
-                isClicked(true)
-            }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
-                .align(Alignment.BottomCenter)
-                .background(Color.White)
-                .padding(bottom = 50.dp, top = 20.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        isClicked(true)
-
-                        val intent =
-                            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                        launcher.launch(intent)
-                    }
-                    .padding(vertical = 10.dp, horizontal = 20.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.images),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .background(Color.Gray.copy(.3f))
-                            .padding(10.dp)
-                            .size(20.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.width(15.dp))
-                Text(text = "Upload from Gallery", fontWeight = FontWeight.Bold)
-            }
-        }
     }
 }

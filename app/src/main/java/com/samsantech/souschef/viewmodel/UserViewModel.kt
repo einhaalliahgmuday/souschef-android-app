@@ -21,9 +21,10 @@ class UserViewModel(
 
     fun refreshUser() {
         val currentUser = firebaseAuthManager.getCurrentUser()
+        println(currentUser?.displayName)
 
         if (currentUser != null) {
-            firebaseUserManager.getUser(currentUser.uid) {
+            firebaseAuthManager.getUser(currentUser.uid) {
                 if (it != null) {
                     user.value = currentUser.email?.let { email ->
                         currentUser.displayName?.let { displayName ->
@@ -44,6 +45,7 @@ class UserViewModel(
     }
 
     fun setProfilePicture(imageUri: Uri, callback: (Boolean, String?) -> Unit) {
+        println("hello")
         firebaseUserManager.updateProfilePhoto(imageUri) { isSuccess, error ->
             if (isSuccess) {
                 refreshUser()
@@ -79,6 +81,12 @@ class UserViewModel(
     fun isEmailExists(email: String, isExists: (Boolean) -> Unit) {
         firebaseUserManager.isEmailExists(email) {
             isExists(it)
+        }
+    }
+
+    fun isUserPreferencesExists(callback: (Boolean) -> Unit) {
+        firebaseUserManager.isUserPreferencesExists() {
+            callback(it)
         }
     }
 
