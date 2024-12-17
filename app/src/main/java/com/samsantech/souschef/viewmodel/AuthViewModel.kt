@@ -34,6 +34,16 @@ class AuthViewModel(
         )
     }
 
+    fun isUserVerified(): Boolean {
+        return firebaseAuthManager.isUserVerified()
+    }
+
+    fun sendEmailVerification(callback: (Boolean, String?) -> Unit) {
+        firebaseAuthManager.sendEmailVerification() { isSuccess, error ->
+            callback(isSuccess, error)
+        }
+    }
+
     fun changePassword(oldPassword: String, newPassword: String, callback: (Boolean, String?) -> Unit) {
         firebaseAuthManager.changePassword(oldPassword, newPassword) { isSuccess, error ->
             callback(isSuccess, error)

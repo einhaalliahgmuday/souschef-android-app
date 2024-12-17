@@ -27,7 +27,7 @@ fun FormOutlinedTextField(value: String, onValueChange: (String) -> Unit,
                 Text(text = label)
             }
         },
-        maxLines = maxLines,
+        singleLine = true,
         modifier = Modifier
             .fillMaxWidth(),
         textStyle = LocalTextStyle.current.merge(

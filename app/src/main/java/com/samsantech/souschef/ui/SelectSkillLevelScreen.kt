@@ -85,7 +85,8 @@ fun SelectSkillLevelScreen(
                                 userViewModel.setPreferencesSkillLevel(skillLevel)
                             }
                         },
-                        borderColor = if (selectedSkillLevel == skillLevel) { Green } else Color.Black
+                        borderColor = if (selectedSkillLevel == skillLevel) { Green } else Color.Black,
+                        backgroundColor = if (selectedSkillLevel == skillLevel) { Green.copy(.2f) } else Color.White,
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                 }
@@ -114,6 +115,9 @@ fun SelectSkillLevelScreen(
                                 success = true
                             }
                         } else {
+                            userViewModel.setUserPreferences {
+                                println()
+                            }
                             onNavigateToHome()
                         }
                     },

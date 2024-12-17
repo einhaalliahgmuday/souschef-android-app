@@ -6,38 +6,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.samsantech.souschef.data.User
 import com.samsantech.souschef.data.UserPreferences
 
 class FirebaseUserManager(private val auth: FirebaseAuth, private val db: FirebaseFirestore, private val storage: FirebaseStorage) {
-    fun getUser(uid: String, callback: (User?) -> Unit) {
-        db.collection("users")
-            .document(uid)
-            .get()
-            .addOnSuccessListener {
-                val user = it.toObject(User::class.java)
-                if (user != null) {
-                    callback(user)
-                } else {
-                    callback(null)
-                }
-            }
-    }
-
-    fun createUser(uid: String, email: String, username: String, isSuccess: (Boolean) -> Unit) {
-        val user = hashMapOf(
-            "username" to username,
-            "email" to email
-        )
-
-        db.collection("users")
-            .document(uid)
-            .set(user)
-            .addOnSuccessListener {
-                isSuccess(true)
-            }
-    }
-
     fun updateUserPreferences(preferences: UserPreferences, isSuccess: (Boolean) -> Unit) {
         val user = auth.currentUser
 
@@ -54,6 +25,22 @@ class FirebaseUserManager(private val auth: FirebaseAuth, private val db: Fireba
         }
     }
 
+    fun isUserPreferencesExists(callback: (Boolean) -> Unit) {
+        val user = auth.currentUser
+
+        if (user != null) {
+            db.collection("preferences")
+                .document(user.uid)
+                .get()
+                .addOnSuccessListener {
+                    callback(it.exists())
+                }
+                .addOnFailureListener {
+                    callback(false)
+                }
+        }
+    }
+
     fun updateProfile(username: String? = null, newDisplayName: String? = null, callback: (Boolean, String?) -> Unit) {
         val user = auth.currentUser
 
@@ -67,6 +54,7 @@ class FirebaseUserManager(private val auth: FirebaseAuth, private val db: Fireba
                         if (!it.isSuccessful) {
                             callback(false, getErrorMessage(it.exception))
                         } else {
+                            callback(true, null)
                             user.reload()
                         }
                     }
@@ -82,12 +70,17 @@ class FirebaseUserManager(private val auth: FirebaseAuth, private val db: Fireba
                     .addOnSuccessListener {
                         callback(true, null)
                         user.reload()
+                        println("success")
+                    }
+                    .addOnFailureListener{
+                        println(it.message)
                     }
             }
         }
     }
 
     fun updateProfilePhoto(imageUri: Uri, callback: (Boolean, String?) -> Unit) {
+        println("hi")
         val user = auth.currentUser
 
         if (user != null) {
@@ -99,6 +92,7 @@ class FirebaseUserManager(private val auth: FirebaseAuth, private val db: Fireba
             uploadTask.continueWithTask { task ->
                 if (!task.isSuccessful) {
                     callback(false, getErrorMessage(task.exception))
+                    println(task.exception)
                 }
 
                 userProfileRef.downloadUrl
@@ -120,6 +114,7 @@ class FirebaseUserManager(private val auth: FirebaseAuth, private val db: Fireba
                         }
                 } else {
                     callback(true, getErrorMessage(task.exception))
+                    println(task.exception)
                 }
             }
         }

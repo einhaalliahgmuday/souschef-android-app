@@ -17,11 +17,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SelectionCard( modifier: Modifier = Modifier, text: String, clickable: () -> Unit, borderColor: Color = Color.Black ) {
+fun SelectionCard( modifier: Modifier = Modifier, text: String, clickable: () -> Unit, borderColor: Color = Color.Black, backgroundColor: Color = Color.White ) {
     Column(
         modifier = modifier
             .clickable (onClick = clickable)
-            .background(Color.White, RoundedCornerShape(10.dp))
+            .background(backgroundColor, RoundedCornerShape(10.dp))
             .clip(RoundedCornerShape(10.dp))
             .border(BorderStroke(1.dp, borderColor), RoundedCornerShape(10.dp)),
     ) {

@@ -3,17 +3,34 @@ package com.samsantech.souschef.firebase
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 import com.samsantech.souschef.data.User
 
 class FirebaseAuthManager(
     private val auth: FirebaseAuth,
-    private val firebaseUserManager: FirebaseUserManager
+    private val db: FirebaseFirestore,
+    private val firebaseUserManager: FirebaseUserManager,
 ) {
     fun getCurrentUser(): FirebaseUser? {
         return auth.currentUser
     }
 
+    fun getUser(uid: String, callback: (User?) -> Unit) {
+        db.collection("users")
+            .document(uid)
+            .get()
+            .addOnSuccessListener {
+                val user = it.toObject(User::class.java)
+                if (user != null) {
+                    callback(user)
+                } else {
+                    callback(null)
+                }
+            }
+    }
+
     fun signUp(user: User, isSuccess: (Boolean, String?) -> Unit) {
+        println("signing up...")
         auth.createUserWithEmailAndPassword(user.email, user.password)
             .addOnCompleteListener {
                 var error: String? = null
@@ -23,17 +40,39 @@ class FirebaseAuthManager(
                     println(it.exception)
                 } else {
                     val signedUpUser = getCurrentUser()
+                    println("heeey")
                     if (signedUpUser != null) {
+                        println("available")
                         firebaseUserManager.updateProfile(newDisplayName = user.displayName) { _, errorMessage ->
                             if (errorMessage != null) {
                                 error = errorMessage
                             }
+                            println(errorMessage)
                         }
-                        firebaseUserManager.createUser(signedUpUser.uid, user.email, user.username) {
+                        createUser(signedUpUser.uid, user.email, user.username) {
                             isSuccess(true, error)
+                            println(isSuccess)
                         }
                     }
                 }
+            }
+    }
+
+    private fun createUser(uid: String, email: String, username: String, isSuccess: (Boolean) -> Unit) {
+        val user = hashMapOf(
+            "username" to username,
+            "email" to email
+        )
+
+        db.collection("users")
+            .document(uid)
+            .set(user)
+            .addOnSuccessListener {
+                isSuccess(true)
+            }
+            .addOnFailureListener {
+                println(it.message)
+                isSuccess(false)
             }
     }
 
@@ -41,6 +80,8 @@ class FirebaseAuthManager(
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+
+                    auth.currentUser?.sendEmailVerification()
                     onComplete(true, null)
                 } else {
                     val exception = task.exception
@@ -51,6 +92,25 @@ class FirebaseAuthManager(
 
     fun logout() {
         auth.signOut()
+    }
+
+    fun isUserVerified(): Boolean {
+        val currentUser = auth.currentUser
+
+        return currentUser?.isEmailVerified ?: false
+    }
+
+    fun sendEmailVerification(callback: (Boolean, String?) -> Unit) {
+        val currentUser = auth.currentUser
+
+        currentUser?.sendEmailVerification()
+            ?.addOnCompleteListener {
+                if (it.isSuccessful) {
+                    callback(true, null)
+                } else {
+                    callback(false, "There was a problem sending a new verification email. Please try again later.")
+                }
+            }
     }
 
     fun changePassword(oldPassword: String, newPassword: String, callback: (Boolean, String?) -> Unit) {

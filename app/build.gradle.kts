@@ -49,6 +49,14 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/DEPENDENCIES"
+            excludes += "/META-INF/INDEX.LIST"
+            excludes += "/META-INF/io.netty.versions.properties"
+        }
+    }
 }
 
 dependencies {
@@ -80,4 +88,10 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
+
+    implementation (platform("com.google.cloud:libraries-bom:26.51.0"))
+//    implementation("com.google.auth:google-auth-library-oauth2-http")
+//    implementation("com.google.api-client:google-api-client")
+//    implementation("com.google.cloud:google-cloud-texttospeech")
+//    implementation("com.google.cloud:google-cloud-speech")
 }

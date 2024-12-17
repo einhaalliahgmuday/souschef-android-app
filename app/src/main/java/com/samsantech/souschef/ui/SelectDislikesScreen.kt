@@ -75,7 +75,8 @@ fun SelectDislikesScreen(
                             userViewModel.addPreferencesDislike(dislike)
                         }
                     },
-                    borderColor = if (isSelected == true) { Green } else Color.Black
+                    borderColor = if (isSelected == true) { Green } else Color.Black,
+                    backgroundColor = if (isSelected == true) { Green.copy(.2f) } else Color.White,
                 )
                 Spacer(modifier = Modifier.height(10.dp))
             }

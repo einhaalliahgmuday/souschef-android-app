@@ -42,8 +42,10 @@ fun LoginScreen(
     authViewModel: AuthViewModel,
     userViewModel: UserViewModel,
     onNavigateToSignUp: () -> Unit,
+    onNavigateToVerifyEmail: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
-    onNavigateToHome: () -> Unit
+    onNavigateToHome: () -> Unit,
+    onNavigateToSelectCuisines: () -> Unit
 ) {
     var email by remember {
         mutableStateOf("")
@@ -85,6 +87,7 @@ fun LoginScreen(
             FormOutlinedTextField(
                 value = email,
                 onValueChange = {
+                                loginError = ""
                                 email = it
                 },
                 label = "Email",
@@ -99,6 +102,7 @@ fun LoginScreen(
             PasswordOutlinedTextField(
                 value = password,
                 onValueChange = {
+                    loginError = ""
                     password = it
                 },
                 label = "Password", withLeadingIcon = true
@@ -132,8 +136,21 @@ fun LoginScreen(
                             isLoggingIn = false
 
                             if (isSuccess) {
-                                userViewModel.refreshUser()
-                                onNavigateToHome()
+                                if (!authViewModel.isUserVerified()) {
+                                    authViewModel.sendEmailVerification() { _, _ ->
+                                        authViewModel.logout()
+                                        onNavigateToVerifyEmail()
+                                    }
+                                } else {
+                                    userViewModel.refreshUser()
+                                    userViewModel.isUserPreferencesExists {
+                                        if (it) {
+                                            onNavigateToHome()
+                                        } else {
+                                            onNavigateToSelectCuisines()
+                                        }
+                                    }
+                                }
                             } else {
                                 loginError = err ?: "Unable to login"
                             }
