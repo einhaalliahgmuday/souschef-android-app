@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,13 +33,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samsantech.souschef.ui.components.ColoredButton
+import com.samsantech.souschef.ui.components.FormBasicTextField
+import com.samsantech.souschef.ui.components.ImageButton
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 import com.samsantech.souschef.ui.theme.Yellow
 
 @Composable
 fun CreateRecipeScreenTwo() {
-    var ingredientsCount = 1
+    var ingredientsCount = 3
 
     Box(modifier = Modifier.background(Color.White)) {
         Column {
@@ -75,12 +78,15 @@ fun CreateRecipeScreenTwo() {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-//                            FormBasicTextField(
-//                                value = "ndsandsbabndsbnbdnfbndbfndbfndbfndbfndbnfbdnbfndbfndbfndnfd",
-//                                maxLines = 3,
-//                                onValueChange = {},
-//                                modifier = Modifier.weight(1f)
-//                            )
+                            FormBasicTextField(
+                                value = "",
+                                placeholder = "Quantity, Ingredient Name",
+                                maxLines = 3,
+                                onValueChange = {},
+                                modifier = Modifier.weight(1f),
+                                borderColor = Color.Gray
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
                             Icon(
                                 imageVector = Icons.Filled.Close,
                                 contentDescription = null,
@@ -93,43 +99,70 @@ fun CreateRecipeScreenTwo() {
                         }
                         Spacer(modifier = Modifier.height(10.dp))
                     }
+                    Spacer(modifier = Modifier.height(5.dp))
                     Box(
-                        contentAlignment = Alignment.CenterEnd,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { }
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .wrapContentSize()
-                                .clip(RoundedCornerShape(5.dp))
-                                .background(Yellow, RoundedCornerShape(5.dp))
-                                .clickable { }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Add,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(5.dp)
-                                    .size(20.dp),
-                                tint = Color.Black,
-                            )
-                        }
-
-//                        ImageButton(onClick = { /*TODO*/ },
-//                            imageVector = Icons.Filled.Add, containerColor = Yellow, contentColor = Color.Black,
-//                            modifier = Modifier.fillMaxWidth(.3f))
+                        ImageButton(onClick = { /*TODO*/ },
+                            imageVector = Icons.Filled.Add, containerColor = Yellow, contentColor = Color.Black,
+                            modifier = Modifier.width(80.dp).size(32.dp), contentPadding = PaddingValues(0.dp)
+                        )
                     }
+//                    Box(
+//                        contentAlignment = Alignment.Center,
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                    ) {
+//                        Box(
+//                            modifier = Modifier
+//                                .wrapContentSize()
+//                                .clip(RoundedCornerShape(5.dp))
+//                                .background(Yellow, RoundedCornerShape(5.dp))
+//                                .clickable { }
+//                        ) {
+////                            Text(
+////                                text = "+ Add Ingredient",
+////                                modifier = Modifier
+////                                    .padding(10.dp, 5.dp),
+////                                fontWeight = FontWeight.SemiBold
+////                            )
+//                            Icon(
+//                                imageVector = Icons.Filled.Add,
+//                                contentDescription = null,
+//                                modifier = Modifier
+//                                    .padding(5.dp)
+//                                    .size(20.dp),
+//                                tint = Color.Black,
+//                            )
+//                        }
+//
+////                        ImageButton(onClick = { /*TODO*/ },
+////                            imageVector = Icons.Filled.Add, containerColor = Yellow, contentColor = Color.Black,
+////                            modifier = Modifier.fillMaxWidth(.3f))
+//                    }
                 }
 
                 Column {
                     Spacer(modifier = Modifier.height(30.dp))
                     Row {
-                        ColoredButton(onClick = { /*TODO*/ }, text = "Back", containerColor = Color.White,
-                            contentColor = Color.Black, border = BorderStroke(1.dp, Green), modifier = Modifier.weight(1f))
+                        ColoredButton(
+                            onClick = { /*TODO*/ },
+                            text = "Back",
+                            containerColor = Color.White,
+                            contentColor = Color.Black,
+                            border = BorderStroke(1.dp, Green),
+                            modifier = Modifier.weight(1f)
+                        )
                         Spacer(modifier = Modifier.width(12.dp))
-                        ColoredButton(onClick = { /*TODO*/ }, text = "Next", containerColor = Green,
-                            contentColor = Color.White, border = BorderStroke(1.dp, Green), modifier = Modifier.weight(1f))
+                        ColoredButton(
+                            onClick = { /*TODO*/ },
+                            text = "Next",
+                            containerColor = Green,
+                            contentColor = Color.White,
+                            border = BorderStroke(1.dp, Green),
+                            modifier = Modifier.weight(1f)
+                        )
                     }
                     Spacer(modifier = Modifier.height(30.dp))
                 }

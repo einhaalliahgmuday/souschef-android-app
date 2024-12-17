@@ -21,6 +21,7 @@ import com.samsantech.souschef.ui.ProfileScreen
 import com.samsantech.souschef.ui.RecipeBrowserScreen
 import com.samsantech.souschef.ui.RecipeScreen
 import com.samsantech.souschef.ui.ChangePasswordScreen
+import com.samsantech.souschef.ui.CreateRecipeScreenFour
 import com.samsantech.souschef.ui.SelectCategoryScreen
 import com.samsantech.souschef.ui.SelectCuisinesScreen
 import com.samsantech.souschef.ui.SelectDislikesScreen
@@ -31,6 +32,7 @@ import com.samsantech.souschef.ui.UpdateEmailScreen
 import com.samsantech.souschef.ui.VerifyEmailScreen
 import com.samsantech.souschef.ui.components.ContentBottomNavigationWrapper
 import com.samsantech.souschef.viewmodel.AuthViewModel
+import com.samsantech.souschef.viewmodel.OwnRecipeViewModel
 import com.samsantech.souschef.viewmodel.UserViewModel
 import kotlinx.serialization.Serializable
 
@@ -40,12 +42,13 @@ fun SousChefApp(
     activity: ComponentActivity,
     context: Context,
     authViewModel: AuthViewModel,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    ownRecipeViewModel: OwnRecipeViewModel
 ) {
     Box {
         val navController = rememberNavController()
 
-        NavHost(navController = navController, startDestination = CreateRecipeTwo) {
+        NavHost(navController = navController, startDestination = CreateRecipeOne) {
             composable<Opening> {
                 var afterOpening: Any = GetStarted
                 if (user != null) {
@@ -233,13 +236,19 @@ fun SousChefApp(
                 RecipeScreen()
             }
             composable<CreateRecipeOne> {
-                CreateRecipeScreenOne(context)
+                CreateRecipeScreenOne(
+                    context,
+                    ownRecipeViewModel
+                )
             }
             composable<CreateRecipeTwo> {
                 CreateRecipeScreenTwo()
             }
             composable<CreateRecipeThree> {
                 CreateRecipeScreenThree()
+            }
+            composable<CreateRecipeFour> {
+                CreateRecipeScreenFour()
             }
         }
     }
@@ -307,3 +316,6 @@ object CreateRecipeTwo
 
 @Serializable
 object CreateRecipeThree
+
+@Serializable
+object CreateRecipeFour

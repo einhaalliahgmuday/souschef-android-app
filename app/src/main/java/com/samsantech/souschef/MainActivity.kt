@@ -12,6 +12,7 @@ import com.samsantech.souschef.firebase.FirebaseAuthManager
 import com.samsantech.souschef.firebase.FirebaseUserManager
 import com.samsantech.souschef.ui.theme.SousChefTheme
 import com.samsantech.souschef.viewmodel.AuthViewModel
+import com.samsantech.souschef.viewmodel.OwnRecipeViewModel
 import com.samsantech.souschef.viewmodel.UserViewModel
 
 class MainActivity : ComponentActivity() {
@@ -32,13 +33,15 @@ class MainActivity : ComponentActivity() {
 
                 val authViewModel = AuthViewModel(firebaseAuthManager)
                 val userViewModel = UserViewModel(firebaseAuthManager, firebaseUserManager)
+                val ownRecipeViewModel = OwnRecipeViewModel()
 
                 SousChefApp(
                     user,
                     activity = this,
                     context = this,
                     authViewModel,
-                    userViewModel
+                    userViewModel,
+                    ownRecipeViewModel
                 )
             }
         }

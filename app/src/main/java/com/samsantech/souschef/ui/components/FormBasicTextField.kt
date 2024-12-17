@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun FormBasicTextField(modifier: Modifier = Modifier, value: String, onValueChange: (String) -> Unit,
-                       minLines: Int = 1, maxLines: Int = Int.MAX_VALUE,
+                       minLines: Int = 1, maxLines: Int = minLines,
                        placeholder: String? = null, textAlign: TextAlign = TextAlign.Start,
                        borderColor: Color = Color.Black, placeholderAlign: TextAlign = TextAlign.Start,
                        padding: Dp = 12.dp) {
