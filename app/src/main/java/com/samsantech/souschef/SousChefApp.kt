@@ -22,6 +22,7 @@ import com.samsantech.souschef.ui.RecipeBrowserScreen
 import com.samsantech.souschef.ui.RecipeScreen
 import com.samsantech.souschef.ui.ChangePasswordScreen
 import com.samsantech.souschef.ui.CreateRecipeScreenFour
+import com.samsantech.souschef.ui.SearchScreen
 import com.samsantech.souschef.ui.SelectCategoryScreen
 import com.samsantech.souschef.ui.SelectCuisinesScreen
 import com.samsantech.souschef.ui.SelectDislikesScreen
@@ -191,11 +192,11 @@ fun SousChefApp(
                         navController.navigate(route = CreateRecipeOne)
                     },
                     onNavigateToSearch = {
-                        navController.navigate(route = Profile)
+                        navController.navigate(route = Search)
                     },
-                    onNavigateToTiktokVideos = {
-                        navController.navigate(route = TiktokVideos)
-                    },
+//                    onNavigateToTiktokVideos = {
+//                        navController.navigate(route = TiktokVideos)
+//                    },
                     onNavigateToProfile = {
                         navController.navigate(route = Profile) {
                             popUpTo(Profile) { inclusive = true }
@@ -215,11 +216,11 @@ fun SousChefApp(
                         navController.navigate(route = CreateRecipeOne)
                     },
                     onNavigateToSearch = {
-                        navController.navigate(route = Profile)
+                        navController.navigate(route = Search)
                     },
-                    onNavigateToTiktokVideos = {
-                        navController.navigate(route = TiktokVideos)
-                    },
+//                    onNavigateToTiktokVideos = {
+//                        navController.navigate(route = TiktokVideos)
+//                    },
                     onNavigateToProfile = {
                         navController.navigate(route = Profile) {
                             popUpTo(Profile) { inclusive = true }
@@ -231,6 +232,30 @@ fun SousChefApp(
                         userViewModel,
                         onNavigateToEditProfile = { navController.navigate(route = EditProfile) }
                     )
+                }
+            }
+            composable<Search> {
+                ContentBottomNavigationWrapper(
+                    name = "Search",
+                    onNavigateToHome = {
+                        navController.navigate(route = Home)
+                    },
+                    onNavigateToCreateRecipe = {
+                        navController.navigate(route = CreateRecipeOne)
+                    },
+                    onNavigateToSearch = {
+                        navController.navigate(route = Search)
+                    },
+//                    onNavigateToTiktokVideos = {
+//                        navController.navigate(route = TiktokVideos)
+//                    },
+                    onNavigateToProfile = {
+                        navController.navigate(route = Profile) {
+                            popUpTo(Profile) { inclusive = true }
+                        }
+                    },
+                ) { paddingValues ->
+                    SearchScreen(paddingValues)
                 }
             }
             composable<SelectCategory> {
@@ -260,10 +285,9 @@ fun SousChefApp(
             composable<CreateRecipeFour> {
                 CreateRecipeScreenFour()
             }
-            composable<TiktokVideos> {
-                TiktokVideosScreen()
-
-            }
+//            composable<TiktokVideos> {
+//                TiktokVideosScreen()
+//            }
         }
     }
 }
@@ -335,4 +359,7 @@ object CreateRecipeThree
 object CreateRecipeFour
 
 @Serializable
-object TiktokVideos
+object Search
+
+//@Serializable
+//object TiktokVideos

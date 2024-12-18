@@ -186,7 +186,6 @@ fun HomeScreen(paddingValues: PaddingValues) {
         }
 //    }
 }
-
 @Composable
 fun RecipeFeed() {
     val recipes = listOf(
@@ -205,14 +204,13 @@ fun RecipeFeed() {
         }
     }
 }
-
 @Composable
 fun RecipeCard(recipe: Pair) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(Color(240, 240, 240))
+            .background(Color(245, 245, 220))
             .clickable {}
     ) {
         Row(
@@ -256,7 +254,6 @@ fun TikTokVideoListEmbedded(tiktokLinks: List<String>) {
         }
     }
 }
-
 @Composable
 fun TikTokVideoPlayer(link: String) {
     AndroidView(
@@ -274,7 +271,6 @@ fun TikTokVideoPlayer(link: String) {
             .background(Color.LightGray)
     )
 }
-
 data class Pair(val name: String, val imageRes: Int)
 
 //@Composable

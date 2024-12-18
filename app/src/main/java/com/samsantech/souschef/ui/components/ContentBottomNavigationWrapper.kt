@@ -10,7 +10,7 @@ fun ContentBottomNavigationWrapper(
     onNavigateToHome: () -> Unit,
     onNavigateToCreateRecipe: () -> Unit,
     onNavigateToSearch: () -> Unit,
-    onNavigateToTiktokVideos: () -> Unit,
+    //onNavigateToTiktokVideos: () -> Unit,
     onNavigateToProfile: () -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ) {
@@ -21,7 +21,7 @@ fun ContentBottomNavigationWrapper(
                 onNavigateToHome,
                 onNavigateToCreateRecipe,
                 onNavigateToSearch,
-                onNavigateToTiktokVideos,
+                //onNavigateToTiktokVideos,
                 onNavigateToProfile
             )
         }

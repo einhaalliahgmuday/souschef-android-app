@@ -33,7 +33,7 @@ fun BottomNavigationBar(
     onNavigateToHome: () -> Unit,
     onNavigateToCreateRecipe: () -> Unit,
     onNavigateToSearch: () -> Unit,
-    onNavigateToTiktokVideos: () -> Unit,
+    //onNavigateToTiktokVideos: () -> Unit,
     onNavigateToProfile: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -62,7 +62,7 @@ fun BottomNavigationBar(
                             "Home" -> onNavigateToHome()
                             "Create recipe" -> onNavigateToCreateRecipe()
                             "Search" -> onNavigateToSearch()
-                            "Tiktok videos" -> onNavigateToTiktokVideos()
+                            //"Tiktok videos" -> onNavigateToTiktokVideos()
                             "Profile" -> onNavigateToProfile()
                         }
                     },
