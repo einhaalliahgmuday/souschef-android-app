@@ -32,9 +32,8 @@ import com.samsantech.souschef.ui.SignUpScreen
 import com.samsantech.souschef.ui.UpdateEmailScreen
 import com.samsantech.souschef.ui.VerifyEmailScreen
 import com.samsantech.souschef.ui.components.ContentBottomNavigationWrapper
-import com.samsantech.souschef.ui.TiktokVideosScreen
 import com.samsantech.souschef.viewmodel.AuthViewModel
-import com.samsantech.souschef.viewmodel.OwnRecipeViewModel
+import com.samsantech.souschef.viewmodel.OwnRecipesViewModel
 import com.samsantech.souschef.viewmodel.UserViewModel
 import kotlinx.serialization.Serializable
 
@@ -45,18 +44,18 @@ fun SousChefApp(
     context: Context,
     authViewModel: AuthViewModel,
     userViewModel: UserViewModel,
-    ownRecipeViewModel: OwnRecipeViewModel
+    ownRecipesViewModel: OwnRecipesViewModel
 ) {
     Box {
         val navController = rememberNavController()
 
 
-        NavHost(navController = navController, startDestination = Opening) {
+        NavHost(navController = navController, startDestination = Profile) {
 
             composable<Opening> {
                 var afterOpening: Any = GetStarted
                 if (user != null) {
-                    afterOpening = Profile
+                    afterOpening = Home
                 }
 
                 OpeningScreen(
@@ -232,7 +231,9 @@ fun SousChefApp(
                     ProfileScreen(
                         context,
                         userViewModel,
-                        onNavigateToEditProfile = { navController.navigate(route = EditProfile) }
+                        ownRecipesViewModel,
+                        onNavigateToEditProfile = { navController.navigate(route = EditProfile) },
+                        onNavigateToRecipe = { navController.navigate(route = Recipe) }
                     )
                 }
             }
@@ -272,7 +273,7 @@ fun SousChefApp(
             composable<CreateRecipeOne> {
                 CreateRecipeScreenOne(
                     context,
-                    ownRecipeViewModel,
+                    ownRecipesViewModel,
                     onNavigateToCreateRecipeTwo = {
                         navController.navigate(route = CreateRecipeTwo)
                     },
@@ -285,7 +286,7 @@ fun SousChefApp(
             }
             composable<CreateRecipeTwo> {
                 CreateRecipeScreenTwo(
-                    ownRecipeViewModel,
+                    ownRecipesViewModel,
                     onNavigateToCreateRecipeOne = {
                         navController.navigate(route = CreateRecipeOne) {
                             popUpTo(CreateRecipeTwo) { inclusive = true }
@@ -303,7 +304,7 @@ fun SousChefApp(
             }
             composable<CreateRecipeThree> {
                 CreateRecipeScreenThree(
-                    ownRecipeViewModel,
+                    ownRecipesViewModel,
                     onNavigateToCreateRecipeTwo = {
                         navController.navigate(route = CreateRecipeTwo) {
                             popUpTo(CreateRecipeThree) { inclusive = true }
@@ -321,7 +322,8 @@ fun SousChefApp(
             }
             composable<CreateRecipeFour> {
                 CreateRecipeScreenFour(
-                    ownRecipeViewModel,
+                    context,
+                    ownRecipesViewModel,
                     onNavigateToCreateRecipeThree = {
                         navController.navigate(route = CreateRecipeThree) {
                             popUpTo(CreateRecipeFour) { inclusive = true }

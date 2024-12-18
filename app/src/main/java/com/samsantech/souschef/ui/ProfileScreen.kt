@@ -11,10 +11,14 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +30,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -47,6 +52,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -58,25 +64,25 @@ import com.samsantech.souschef.ui.components.UploadImagePopUp
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 import com.samsantech.souschef.utils.convertUriToBitmap
+import com.samsantech.souschef.viewmodel.OwnRecipesViewModel
 import com.samsantech.souschef.viewmodel.UserViewModel
 
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ProfileScreen(
     context: Context,
     userViewModel: UserViewModel,
-    onNavigateToEditProfile: () -> Unit
+    ownRecipesViewModel: OwnRecipesViewModel,
+    onNavigateToEditProfile: () -> Unit,
+    onNavigateToRecipe: () -> Unit
 ) {
     val user by userViewModel.user.collectAsState()
-
-    if (user == null) {
-        onNavigateToEditProfile()
-    }
+    val ownRecipes by ownRecipesViewModel.recipes.collectAsState()
 
     var loading by remember {
         mutableStateOf(false)
     }
-
     var showProfileImage by remember {
         mutableStateOf(false)
     }
@@ -85,6 +91,9 @@ fun ProfileScreen(
     }
     var imageUri by remember {
         mutableStateOf<Uri?>(null)
+    }
+    var show by remember {
+        mutableStateOf("recipes")
     }
 
     val activityResultLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
@@ -102,6 +111,7 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 20.dp)
+                    .padding(bottom = 60.dp)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -121,7 +131,7 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .clip(CircleShape)
                                 .size(130.dp)
-                                .background(Color.White)
+                                .background(Color.LightGray)
                         )
                     }
                     IconButton(
@@ -173,28 +183,111 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 ColoredButton(onClick = onNavigateToEditProfile, text = "Settings")
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     ColoredButton(
-                        onClick = {  },
+                        onClick = { show = "recipes" },
                         text = "Your Recipes",
                         modifier = Modifier.weight(1f),
                         contentPadding = PaddingValues(12.dp, 12.dp),
-                        containerColor = Color.White, contentColor = Green,
-                        border = BorderStroke(1.dp, Color(0xFF16A637))
+                        containerColor = if (show == "recipes") Green else Color.White,
+                        contentColor = if (show == "recipes") Color.White else Green,
+                        border = if (show == "recipes")  BorderStroke(0.dp, Color.Transparent) else BorderStroke(1.dp, Color(0xFF16A637))
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     ColoredButton(
-                        onClick = {  },
+                        onClick = { show = "favorites" },
                         text = "Favorites",
                         modifier = Modifier.weight(1f),
                         contentPadding = PaddingValues(12.dp, 12.dp),
+                        containerColor = if (show == "favorites") Green else Color.White,
+                        contentColor = if (show == "favorites") Color.White else Green,
+                        border = if (show == "favorites")  BorderStroke(0.dp, Color.Transparent) else BorderStroke(1.dp, Color(0xFF16A637))
                     )
                 }
+                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(
+                    modifier = Modifier
+                        .height(1.dp)
+                        .fillMaxWidth()
+                        .background(Color.Gray)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                if (show == "recipes") {
+                    BoxWithConstraints {
+                        val maxWidth = maxWidth
+
+                        if (ownRecipes.isEmpty()) {
+                            Text(
+                                text = "No recipes to show",
+                                modifier = Modifier
+                                    .padding(top = 8.dp)
+                                    .fillMaxWidth(),
+                                fontSize = 14.sp,
+                                fontStyle = FontStyle.Italic,
+                                color = Color.Black.copy(.7f),
+                                textAlign = TextAlign.Center
+                            )
+                        } else {
+                            FlowRow(
+                                maxItemsInEachRow = 3,
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                                verticalArrangement = Arrangement.spacedBy(5.dp)
+                            ) {
+                                ownRecipes.forEach { recipe ->
+                                    val photoUrl: Uri? = if (recipe.photosUrl["portrait"] != null) {
+                                        Uri.parse("${recipe.photosUrl["portrait"]}")
+                                    } else if (recipe.photosUrl["square"] != null) {
+                                        Uri.parse("${recipe.photosUrl["square"]}")
+                                    } else {
+                                        Uri.parse("${recipe.photosUrl["landscape"]}")
+                                    }
+
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(5.dp))
+                                            .height(180.dp)
+                                            .width((maxWidth / 3) - 10.dp)
+                                            .background(Color.White)
+                                            .border(
+                                                if (photoUrl != null) 0.dp else 1.dp,
+                                                if (photoUrl != null) Color.Transparent else Color.Gray,
+                                                RoundedCornerShape(5.dp)
+                                            )
+                                            .clickable { },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        AsyncImage(
+                                            model = "$photoUrl",
+                                            contentDescription = null,
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else if (show == "favorites") {
+                    Box {
+                        if (true) {
+                            Text(
+                                text = "No favorites to show",
+                                modifier = Modifier.padding(top = 20.dp),
+                                fontSize = 14.sp,
+                                fontStyle = FontStyle.Italic,
+                                color = Color.Black.copy(.7f)
+                            )
+                        }
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(20.dp))
             }
         }

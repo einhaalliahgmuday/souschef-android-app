@@ -9,10 +9,11 @@ import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
 import com.samsantech.souschef.firebase.FirebaseAuthManager
+import com.samsantech.souschef.firebase.FirebaseRecipeManager
 import com.samsantech.souschef.firebase.FirebaseUserManager
 import com.samsantech.souschef.ui.theme.SousChefTheme
 import com.samsantech.souschef.viewmodel.AuthViewModel
-import com.samsantech.souschef.viewmodel.OwnRecipeViewModel
+import com.samsantech.souschef.viewmodel.OwnRecipesViewModel
 import com.samsantech.souschef.viewmodel.UserViewModel
 
 class MainActivity : ComponentActivity() {
@@ -27,13 +28,13 @@ class MainActivity : ComponentActivity() {
 
                 val firebaseUserManager = FirebaseUserManager(auth, db, storage)
                 val firebaseAuthManager = FirebaseAuthManager(auth, db, firebaseUserManager)
+                val firebaseRecipeManager = FirebaseRecipeManager(auth, db, storage)
 
                 val user = auth.currentUser
-                println(user?.displayName)
 
                 val authViewModel = AuthViewModel(firebaseAuthManager)
                 val userViewModel = UserViewModel(firebaseAuthManager, firebaseUserManager)
-                val ownRecipeViewModel = OwnRecipeViewModel()
+                val ownRecipesViewModel = OwnRecipesViewModel(userViewModel, firebaseRecipeManager)
 
                 SousChefApp(
                     user,
@@ -41,7 +42,7 @@ class MainActivity : ComponentActivity() {
                     context = this,
                     authViewModel,
                     userViewModel,
-                    ownRecipeViewModel
+                    ownRecipesViewModel
                 )
             }
         }

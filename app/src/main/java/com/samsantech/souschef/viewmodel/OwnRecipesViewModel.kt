@@ -2,24 +2,65 @@ package com.samsantech.souschef.viewmodel
 
 import android.net.Uri
 import com.samsantech.souschef.data.Recipe
+import com.samsantech.souschef.firebase.FirebaseRecipeManager
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class OwnRecipeViewModel {
+class OwnRecipesViewModel(
+    private val userViewModel: UserViewModel,
+    private val firebaseRecipeManager: FirebaseRecipeManager
+) {
     val newRecipe = MutableStateFlow<Recipe>(Recipe())
+    val recipes = MutableStateFlow<List<Recipe>>(listOf())
+
+    init {
+        firebaseRecipeManager.getOwnRecipes {
+            recipes.value = it
+        }
+    }
+
+    fun uploadRecipe(callback: (Boolean, String?) -> Unit) {
+        val user = userViewModel.user.value
+
+        if (user != null) {
+            firebaseRecipeManager.addRecipe(
+                recipe = newRecipe.value,
+                user = user,
+                callback = { isSuccess, error ->
+                    callback(isSuccess, error)
+                },
+                uploadedRecipe = { uploadedRecipe ->
+                    val updatedRecipes = recipes.value.toMutableList()
+                    val recipeIndexToUpdate = updatedRecipes.indexOfFirst { it.id == uploadedRecipe.id }
+
+                    if (recipeIndexToUpdate != -1) {
+                        updatedRecipes[recipeIndexToUpdate] = uploadedRecipe
+                    } else {
+                        updatedRecipes.add(uploadedRecipe)
+                    }
+
+                    recipes.value = updatedRecipes
+                }
+            )
+        }
+    }
+
+    fun resetNewRecipe() {
+        newRecipe.value = Recipe()
+    }
 
     fun addPhoto(key: String, value: Uri) {
-        val photos = HashMap<String, Uri>(newRecipe.value.photos?.toMap() ?: hashMapOf())
+        val photos = HashMap<String, Uri>(newRecipe.value.photosUri.toMap())
         photos[key] = value
         newRecipe.value = newRecipe.value.copy(
-            photos = photos
+            photosUri = photos
         )
     }
 
     fun removePhoto(key: String) {
-        val photos = HashMap<String, Uri>(newRecipe.value.photos?.toMap() ?: hashMapOf())
+        val photos = HashMap<String, Uri>(newRecipe.value.photosUri.toMap())
         photos.remove(key)
         newRecipe.value = newRecipe.value.copy(
-            photos = photos
+            photosUri = photos
         )
     }
 

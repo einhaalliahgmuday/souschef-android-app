@@ -47,7 +47,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -64,24 +63,23 @@ import com.samsantech.souschef.ui.components.ErrorText
 import com.samsantech.souschef.ui.components.FormBasicTextField
 import com.samsantech.souschef.ui.components.OwnRecipeHeader
 import com.samsantech.souschef.ui.theme.Green
-import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 import com.samsantech.souschef.ui.theme.Yellow
 import com.samsantech.souschef.utils.convertUriToBitmap
-import com.samsantech.souschef.viewmodel.OwnRecipeViewModel
+import com.samsantech.souschef.viewmodel.OwnRecipesViewModel
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun CreateRecipeScreenOne(
     context: Context,
-    ownRecipeViewModel: OwnRecipeViewModel,
+    ownRecipesViewModel: OwnRecipesViewModel,
     onNavigateToCreateRecipeTwo: () -> Unit,
     closeCreateRecipe: () -> Unit
 ) {
-    val newRecipe by ownRecipeViewModel.newRecipe.collectAsState()
+    val newRecipe by ownRecipesViewModel.newRecipe.collectAsState()
 
     var categories by remember {
 //        mutableStateOf(arrayOf("Chicken", "Pork", "Beef", "Seafood", "Vegetables", "Dessert", "Drink"))
-        mutableStateOf(arrayOf("Chicken", "Pork", "Beef", "Other Meat", "Seafood", "Rice", "Vegetables", "Fruits", "Dessert", "Drink"))
+        mutableStateOf(arrayOf("Chicken", "Pork", "Beef", "Other Meat", "Seafood", "Rice", "Vegetables", "Fruits", "Dessert", "Drink", "Others"))
     }
     val mealTypes = arrayOf("Breakfast", "Lunch", "Dinner", "Snack")
     val difficulty = arrayOf("Easy", "Medium", "Hard")
@@ -115,7 +113,7 @@ fun CreateRecipeScreenOne(
             }
 
             portrait = convertUriToBitmap(context, uri)
-            ownRecipeViewModel.addPhoto("portrait", uri)
+            ownRecipesViewModel.addPhoto("portrait", uri)
         }
     }
     val pickImageLandscape = rememberLauncherForActivityResult(
@@ -127,7 +125,7 @@ fun CreateRecipeScreenOne(
             }
 
             landscape = convertUriToBitmap(context, uri)
-            ownRecipeViewModel.addPhoto("landscape", uri)
+            ownRecipesViewModel.addPhoto("landscape", uri)
         }
     }
     val pickImageSquare = rememberLauncherForActivityResult(
@@ -139,7 +137,7 @@ fun CreateRecipeScreenOne(
             }
 
             square = convertUriToBitmap(context, uri)
-            ownRecipeViewModel.addPhoto("square", uri)
+            ownRecipesViewModel.addPhoto("square", uri)
         }
     }
 
@@ -163,7 +161,7 @@ fun CreateRecipeScreenOne(
                         pickImage = pickImagePortrait,
                         onRemoveClick = {
                             portrait = null
-                            ownRecipeViewModel.removePhoto("portrait")
+                            ownRecipesViewModel.removePhoto("portrait")
                         }
                     )
                     Spacer(modifier = Modifier.width(16.dp))
@@ -175,7 +173,7 @@ fun CreateRecipeScreenOne(
                             pickImage = pickImageLandscape,
                             onRemoveClick = {
                                 landscape = null
-                                ownRecipeViewModel.removePhoto("landscape")
+                                ownRecipesViewModel.removePhoto("landscape")
                             }
                         )
                         Spacer(modifier = Modifier.height(16.dp))
@@ -186,7 +184,7 @@ fun CreateRecipeScreenOne(
                             pickImage = pickImageSquare,
                             onRemoveClick = {
                                 square = null
-                                ownRecipeViewModel.removePhoto("square")
+                                ownRecipesViewModel.removePhoto("square")
                             }
                         )
                     }
@@ -208,7 +206,7 @@ fun CreateRecipeScreenOne(
                                 errors = newErrors
                             }
 
-                            ownRecipeViewModel.setTitle(it)
+                            ownRecipesViewModel.setTitle(it)
                         },
                         placeholder = "What's the title of your recipe?",
                         borderColor = Color.Gray,
@@ -227,7 +225,7 @@ fun CreateRecipeScreenOne(
                     FormBasicTextField(
                         value = newRecipe.description,
                         onValueChange = {
-                            ownRecipeViewModel.setDescription(it)
+                            ownRecipesViewModel.setDescription(it)
                         },
                         minLines = 3,
                         placeholder = "Tell us something more about this recipe.",
@@ -246,7 +244,7 @@ fun CreateRecipeScreenOne(
                             errors = newErrors
                         }
 
-                        ownRecipeViewModel.setPrepTimeHr(it)
+                        ownRecipesViewModel.setPrepTimeHr(it)
                     },
                     min = newRecipe.prepTimeMin,
                     onMinChange = {
@@ -254,7 +252,7 @@ fun CreateRecipeScreenOne(
                             errors = newErrors
                         }
 
-                        ownRecipeViewModel.setPrepTimeMin(it)
+                        ownRecipesViewModel.setPrepTimeMin(it)
                     },
                     errorName = "prepTime",
                     errors = errors,
@@ -278,7 +276,7 @@ fun CreateRecipeScreenOne(
                             errors = newErrors
                         }
 
-                        ownRecipeViewModel.setCookTimeHr(it)
+                        ownRecipesViewModel.setCookTimeHr(it)
                     },
                     min = newRecipe.cookTimeMin,
                     onMinChange = {
@@ -286,7 +284,7 @@ fun CreateRecipeScreenOne(
                             errors = newErrors
                         }
 
-                        ownRecipeViewModel.setCookTimeMin(it)
+                        ownRecipesViewModel.setCookTimeMin(it)
                     },
                     errorName = "cookTime",
                     errors = errors,
@@ -315,7 +313,7 @@ fun CreateRecipeScreenOne(
                                 errors = newErrors
                             }
 
-                            ownRecipeViewModel.setServing(it)
+                            ownRecipesViewModel.setServing(it)
                         },
                         errorName = "serving",
                         errors = errors,
@@ -372,7 +370,7 @@ fun CreateRecipeScreenOne(
                                             errors = newErrors
                                         }
 
-                                        ownRecipeViewModel.setDifficulty(difficulty)
+                                        ownRecipesViewModel.setDifficulty(difficulty)
                                         showDifficultyDropdown = false
                                     },
                                 )
@@ -391,7 +389,7 @@ fun CreateRecipeScreenOne(
                     Text(text = "Meal Type", fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(10.dp))
                     mealTypes.forEach { mealType ->
-                        val isSelected = newRecipe.mealTypes?.contains(mealType)
+                        val isSelected = newRecipe.mealTypes.contains(mealType)
 
                         CreateRecipeCard(
                             mealType,
@@ -400,15 +398,15 @@ fun CreateRecipeScreenOne(
                                     errors = newErrors
                                 }
 
-                                if (isSelected == true) {
-                                    ownRecipeViewModel.removeMealType(mealType)
+                                if (isSelected) {
+                                    ownRecipesViewModel.removeMealType(mealType)
                                 } else {
-                                    ownRecipeViewModel.addMealType(mealType)
+                                    ownRecipesViewModel.addMealType(mealType)
                                 }
                             },
-                            borderColor = if (isSelected == true) { Green } else Color.Black,
-                            backgroundColor = if (isSelected == true) { Green.copy(.2f) } else Color.White,
-                            textColor = if (isSelected == true) { Color.Black } else Color.Black
+                            borderColor = if (isSelected) { Green } else Color.Black,
+                            backgroundColor = if (isSelected) { Green.copy(.2f) } else Color.White,
+                            textColor = if (isSelected) { Color.Black } else Color.Black
                         )
                     }
                 }
@@ -433,12 +431,12 @@ fun CreateRecipeScreenOne(
                                 }
 
                                 if (isSelected) {
-                                    ownRecipeViewModel.removeCategory(category)
+                                    ownRecipesViewModel.removeCategory(category)
                                 } else {
                                     if (newRecipe.categories.size == 3) {
                                         Toast.makeText(context, "Maximum categories is 3.", Toast.LENGTH_LONG).show()
                                     } else {
-                                        ownRecipeViewModel.addCategory(category)
+                                        ownRecipesViewModel.addCategory(category)
                                     }
                                 }
                             },
@@ -464,7 +462,7 @@ fun CreateRecipeScreenOne(
                     onClick = {
                         val newErrors = hashMapOf<String, String>()
 
-                        if (newRecipe.photos?.get("portrait") == null && newRecipe.photos?.get("landscape") == null && newRecipe.photos?.get("square") == null) {
+                        if (newRecipe.photosUri["portrait"] == null && newRecipe.photosUri["landscape"] == null && newRecipe.photosUri["square"] == null) {
                             newErrors["photos"] = "At least one photo is required."
                         }
 
@@ -511,7 +509,7 @@ fun CreateRecipeScreenOne(
                 onCloseClick = { showAddCategory = false },
                 onAddCategory = {
                     if (it.trim() != "") {
-                        ownRecipeViewModel.addCategory(it)
+                        ownRecipesViewModel.addCategory(it)
                         categories = categories.plus(it)
                     }
                     showAddCategory = false
