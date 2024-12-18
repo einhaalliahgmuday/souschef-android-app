@@ -49,7 +49,7 @@ fun SousChefApp(
     Box {
         val navController = rememberNavController()
 
-        NavHost(navController = navController, startDestination = CreateRecipeOne) {
+        NavHost(navController = navController, startDestination = Opening) {
             composable<Opening> {
                 var afterOpening: Any = GetStarted
                 if (user != null) {
