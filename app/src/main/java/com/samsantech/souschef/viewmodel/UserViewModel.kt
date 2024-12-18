@@ -45,7 +45,6 @@ class UserViewModel(
     }
 
     fun setProfilePicture(imageUri: Uri, callback: (Boolean, String?) -> Unit) {
-        println("hello")
         firebaseUserManager.updateProfilePhoto(imageUri) { isSuccess, error ->
             if (isSuccess) {
                 refreshUser()
