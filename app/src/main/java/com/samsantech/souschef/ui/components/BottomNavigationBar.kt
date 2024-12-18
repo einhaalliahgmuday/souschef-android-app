@@ -33,7 +33,7 @@ fun BottomNavigationBar(
     onNavigateToHome: () -> Unit,
     onNavigateToCreateRecipe: () -> Unit,
     onNavigateToSearch: () -> Unit,
-    onNavigateToTiktokVideos: () -> Unit,
+    //onNavigateToTiktokVideos: () -> Unit,
     onNavigateToProfile: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -41,12 +41,12 @@ fun BottomNavigationBar(
         hashMapOf("name" to "Home", "imageVector" to Icons.Filled.Home),
         hashMapOf("name" to "Search", "imageVector" to Icons.Filled.Search),
         hashMapOf("name" to "Create recipe", "imageVector" to Icons.Filled.AddCircle),
-        hashMapOf("name" to "Tiktok videos", "imageVector" to Icons.Filled.PlayArrow),
+        //hashMapOf("name" to "Tiktok videos", "imageVector" to Icons.Filled.PlayArrow),
         hashMapOf("name" to "Profile", "imageVector" to Icons.Filled.Person),
     )
 
     Column(modifier = Modifier
-        .padding(bottom = 44.dp)
+        .padding(bottom = 0.dp)
         .background(Green)) {
         BottomNavigation(
             backgroundColor = Green,
@@ -62,7 +62,7 @@ fun BottomNavigationBar(
                             "Home" -> onNavigateToHome()
                             "Create recipe" -> onNavigateToCreateRecipe()
                             "Search" -> onNavigateToSearch()
-                            "Tiktok videos" -> onNavigateToTiktokVideos()
+                            //"Tiktok videos" -> onNavigateToTiktokVideos()
                             "Profile" -> onNavigateToProfile()
                         }
                     },
