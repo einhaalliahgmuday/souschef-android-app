@@ -73,25 +73,25 @@ class OwnRecipeViewModel {
 
     fun addMealType(mealType: String) {
         newRecipe.value = newRecipe.value.copy(
-            mealTypes = newRecipe.value.mealTypes?.plus(mealType) ?: listOf(mealType)
+            mealTypes = newRecipe.value.mealTypes.plus(mealType)
         )
     }
 
     fun removeMealType(mealType: String) {
         newRecipe.value = newRecipe.value.copy(
-            mealTypes = newRecipe.value.mealTypes?.minus(mealType) ?: listOf(mealType)
+            mealTypes = newRecipe.value.mealTypes.minus(mealType)
         )
     }
 
     fun addCategory(category: String) {
         newRecipe.value = newRecipe.value.copy(
-            categories = newRecipe.value.categories?.plus(category) ?: listOf(category)
+            categories = newRecipe.value.categories.plus(category)
         )
     }
 
     fun removeCategory(category: String) {
         newRecipe.value = newRecipe.value.copy(
-            categories = newRecipe.value.categories?.minus(category) ?: listOf(category)
+            categories = newRecipe.value.categories.minus(category)
         )
     }
 }
