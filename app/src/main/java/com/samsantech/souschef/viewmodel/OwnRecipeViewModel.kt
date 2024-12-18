@@ -94,4 +94,84 @@ class OwnRecipeViewModel {
             categories = newRecipe.value.categories.minus(category)
         )
     }
+
+    fun addIngredient() {
+        val newIngredients = newRecipe.value.ingredients.toMutableList()
+        newIngredients.add("")
+
+        newRecipe.value = newRecipe.value.copy(
+            ingredients = newIngredients
+        )
+    }
+
+    fun updateIngredients(ingredientIndex: Int, value: String) {
+        val newIngredients = newRecipe.value.ingredients.mapIndexed { index, ingredient ->
+            if(index == ingredientIndex) value else ingredient
+        }
+
+        newRecipe.value = newRecipe.value.copy(
+            ingredients = newIngredients
+        )
+    }
+
+    fun removeIngredient(ingredientIndex: Int) {
+        val newIngredients = newRecipe.value.ingredients.toMutableList()
+        newIngredients.removeAt(ingredientIndex)
+
+        newRecipe.value = newRecipe.value.copy(
+            ingredients = newIngredients
+        )
+    }
+
+    fun setIngredients(ingredients: List<String>) {
+        newRecipe.value = newRecipe.value.copy(
+            ingredients = ingredients
+        )
+    }
+
+    fun addInstruction() {
+        val newInstructions = newRecipe.value.instructions.toMutableList()
+        newInstructions.add("")
+
+        newRecipe.value = newRecipe.value.copy(
+            instructions = newInstructions
+        )
+    }
+
+    fun updateInstructions(instructionIndex: Int, value: String) {
+        val newInstructions = newRecipe.value.instructions.mapIndexed { index, instruction ->
+            if(index == instructionIndex) value else instruction
+        }
+
+        newRecipe.value = newRecipe.value.copy(
+            instructions = newInstructions
+        )
+    }
+
+    fun removeInstruction(instructionIndex: Int) {
+        val newInstructions = newRecipe.value.instructions.toMutableList()
+        newInstructions.removeAt(instructionIndex)
+
+        newRecipe.value = newRecipe.value.copy(
+            instructions = newInstructions
+        )
+    }
+
+    fun setInstructions(instructions: List<String>) {
+        newRecipe.value = newRecipe.value.copy(
+            instructions = instructions
+        )
+    }
+
+    fun addTag(tag: String) {
+        newRecipe.value = newRecipe.value.copy(
+            tags = newRecipe.value.tags.plus(tag)
+        )
+    }
+
+    fun removeTag(tag: String) {
+        newRecipe.value = newRecipe.value.copy(
+            tags = newRecipe.value.tags.minus(tag)
+        )
+    }
 }

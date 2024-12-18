@@ -50,7 +50,9 @@ fun SousChefApp(
     Box {
         val navController = rememberNavController()
 
+
         NavHost(navController = navController, startDestination = Opening) {
+
             composable<Opening> {
                 var afterOpening: Any = GetStarted
                 if (user != null) {
@@ -273,17 +275,64 @@ fun SousChefApp(
                     ownRecipeViewModel,
                     onNavigateToCreateRecipeTwo = {
                         navController.navigate(route = CreateRecipeTwo)
+                    },
+                    closeCreateRecipe = {
+                        navController.navigate(route = Home) {
+                            popUpTo(CreateRecipeOne) { inclusive = true }
+                        }
                     }
                 )
             }
             composable<CreateRecipeTwo> {
-                CreateRecipeScreenTwo()
+                CreateRecipeScreenTwo(
+                    ownRecipeViewModel,
+                    onNavigateToCreateRecipeOne = {
+                        navController.navigate(route = CreateRecipeOne) {
+                            popUpTo(CreateRecipeTwo) { inclusive = true }
+                        }
+                    },
+                    onNavigateToCreateRecipeThree = {
+                        navController.navigate(route = CreateRecipeThree)
+                    },
+                    closeCreateRecipe = {
+                        navController.navigate(route = Home) {
+                            popUpTo(CreateRecipeOne) { inclusive = true }
+                        }
+                    }
+                )
             }
             composable<CreateRecipeThree> {
-                CreateRecipeScreenThree()
+                CreateRecipeScreenThree(
+                    ownRecipeViewModel,
+                    onNavigateToCreateRecipeTwo = {
+                        navController.navigate(route = CreateRecipeTwo) {
+                            popUpTo(CreateRecipeThree) { inclusive = true }
+                        }
+                    },
+                    onNavigateToCreateRecipeFour = {
+                        navController.navigate(route = CreateRecipeFour)
+                    },
+                    closeCreateRecipe = {
+                        navController.navigate(route = Home) {
+                            popUpTo(CreateRecipeOne) { inclusive = true }
+                        }
+                    }
+                )
             }
             composable<CreateRecipeFour> {
-                CreateRecipeScreenFour()
+                CreateRecipeScreenFour(
+                    ownRecipeViewModel,
+                    onNavigateToCreateRecipeThree = {
+                        navController.navigate(route = CreateRecipeThree) {
+                            popUpTo(CreateRecipeFour) { inclusive = true }
+                        }
+                    },
+                    closeCreateRecipe = {
+                        navController.navigate(route = Home) {
+                            popUpTo(CreateRecipeOne) { inclusive = true }
+                        }
+                    }
+                )
             }
 //            composable<TiktokVideos> {
 //                TiktokVideosScreen()

@@ -62,6 +62,7 @@ import com.samsantech.souschef.R
 import com.samsantech.souschef.ui.components.ColoredButton
 import com.samsantech.souschef.ui.components.ErrorText
 import com.samsantech.souschef.ui.components.FormBasicTextField
+import com.samsantech.souschef.ui.components.OwnRecipeHeader
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 import com.samsantech.souschef.ui.theme.Yellow
@@ -73,7 +74,8 @@ import com.samsantech.souschef.viewmodel.OwnRecipeViewModel
 fun CreateRecipeScreenOne(
     context: Context,
     ownRecipeViewModel: OwnRecipeViewModel,
-    onNavigateToCreateRecipeTwo: () -> Unit
+    onNavigateToCreateRecipeTwo: () -> Unit,
+    closeCreateRecipe: () -> Unit
 ) {
     val newRecipe by ownRecipeViewModel.newRecipe.collectAsState()
 
@@ -143,24 +145,7 @@ fun CreateRecipeScreenOne(
 
     Box(modifier = Modifier.background(Color.White)) {
         Column {
-//            Header()
-            Text(
-                text = "Create Recipe",
-                fontFamily = Konkhmer_Sleokcher,
-                fontSize = 24.sp,
-                color = Green,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .padding(top = 32.dp),
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier
-                .background(Color.LightGray)
-                .height(1.dp)
-                .shadow(1.dp, ambientColor = Color.LightGray, spotColor = Color.LightGray)
-                .fillMaxWidth()
-            )
+            OwnRecipeHeader(closeCreateRecipe)
             Column(
                 modifier = Modifier
                     .padding(start = 24.dp, end = 24.dp)
@@ -462,30 +447,6 @@ fun CreateRecipeScreenOne(
                             textColor = if (isSelected) { Color.Black } else Color.Black
                         )
                     }
-//                    Icon(
-//                        imageVector = Icons.Filled.Add,
-//                        contentDescription = null,
-//                        modifier = Modifier
-//                            .clip(RoundedCornerShape(10.dp))
-//                            .clickable {
-//                                if (categories.size < 9) {
-//                                    showAddCategory = true
-//                                } else {
-//                                    Toast
-//                                        .makeText(
-//                                            context,
-//                                            "You can only add two categories.",
-//                                            Toast.LENGTH_LONG
-//                                        )
-//                                        .show()
-//                                }
-//                                categories.size
-//                            }
-//                            .background(Yellow)
-//                            .fillMaxWidth()
-//                            .padding(30.dp, 10.dp),
-//                        tint = Color.Black
-//                    )
                 }
                 if (errors["categories"] != null && errors["categories"] != "") {
                     Spacer(modifier = Modifier.height(5.dp))
@@ -836,7 +797,7 @@ fun NumberFieldWithPlusMinusButtons(
                     } else {
                         onValueChange((intValue + 1).toString())
                     }
-               }
+                }
             ,
             tint = Green
         )

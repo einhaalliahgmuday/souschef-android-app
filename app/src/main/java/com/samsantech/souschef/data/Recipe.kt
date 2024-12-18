@@ -14,7 +14,7 @@ data class Recipe(
     var difficulty: String = "",
     var mealTypes: List<String> = listOf(),
     var categories: List<String> = listOf(),
-    var ingredients: List<String> = listOf(),
-    var instructions: List<String> = listOf(),
-    var tags: List<String>? = null
+    var ingredients: List<String> = listOf(""),
+    var instructions: List<String> = listOf(""),
+    var tags: List<String> = listOf()
 )
