@@ -161,7 +161,6 @@ fun CreateRecipeScreenFour(
                                 Toast.makeText(context, error, Toast.LENGTH_LONG).show()
                             } else {
                                 ownRecipesViewModel.resetNewRecipe()
-                                closeCreateRecipe()
                                 success = true
                             }
                         }
@@ -180,6 +179,7 @@ fun CreateRecipeScreenFour(
                 subMessage = null,
                 buttonName = "OK",
                 onClick = {
+                    closeCreateRecipe()
                     success = false
                 }
             )
