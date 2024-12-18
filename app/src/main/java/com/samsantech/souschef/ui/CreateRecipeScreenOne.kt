@@ -1,5 +1,6 @@
 package com.samsantech.souschef.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
@@ -59,6 +60,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import com.samsantech.souschef.R
 import com.samsantech.souschef.ui.components.ColoredButton
+import com.samsantech.souschef.ui.components.ErrorText
 import com.samsantech.souschef.ui.components.FormBasicTextField
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
@@ -66,16 +68,18 @@ import com.samsantech.souschef.ui.theme.Yellow
 import com.samsantech.souschef.utils.convertUriToBitmap
 import com.samsantech.souschef.viewmodel.OwnRecipeViewModel
 
+@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun CreateRecipeScreenOne(
     context: Context,
-    ownRecipeViewModel: OwnRecipeViewModel
+    ownRecipeViewModel: OwnRecipeViewModel,
+    onNavigateToCreateRecipeTwo: () -> Unit
 ) {
     val newRecipe by ownRecipeViewModel.newRecipe.collectAsState()
 
     var categories by remember {
 //        mutableStateOf(arrayOf("Chicken", "Pork", "Beef", "Seafood", "Vegetables", "Dessert", "Drink"))
-        mutableStateOf(arrayOf("Meat", "Seafood", "Vegetables", "Dessert", "Drink"))
+        mutableStateOf(arrayOf("Chicken", "Pork", "Beef", "Other Meat", "Seafood", "Rice", "Vegetables", "Fruits", "Dessert", "Drink"))
     }
     val mealTypes = arrayOf("Breakfast", "Lunch", "Dinner", "Snack")
     val difficulty = arrayOf("Easy", "Medium", "Hard")
@@ -90,31 +94,6 @@ fun CreateRecipeScreenOne(
         mutableStateOf<Bitmap?>(null)
     }
 
-    val pickImagePortrait = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        if (uri != null) {
-            portrait = convertUriToBitmap(context, uri)
-            ownRecipeViewModel.addPhoto("portrait", uri)
-        }
-    }
-    val pickImageLandscape = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        if (uri != null) {
-            landscape = convertUriToBitmap(context, uri)
-            ownRecipeViewModel.addPhoto("landscape", uri)
-        }
-    }
-    val pickImageSquare = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        if (uri != null) {
-            square = convertUriToBitmap(context, uri)
-            ownRecipeViewModel.addPhoto("square", uri)
-        }
-    }
-
     var showDifficultyDropdown by remember {
         mutableStateOf(false)
     }
@@ -123,6 +102,43 @@ fun CreateRecipeScreenOne(
     }
     var errors by remember {
         mutableStateOf(hashMapOf<String, String>())
+    }
+
+    val pickImagePortrait = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            clearError("photos", errors) { newErrors ->
+                errors = newErrors
+            }
+
+            portrait = convertUriToBitmap(context, uri)
+            ownRecipeViewModel.addPhoto("portrait", uri)
+        }
+    }
+    val pickImageLandscape = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            clearError("photos", errors) { newErrors ->
+                errors = newErrors
+            }
+
+            landscape = convertUriToBitmap(context, uri)
+            ownRecipeViewModel.addPhoto("landscape", uri)
+        }
+    }
+    val pickImageSquare = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            clearError("photos", errors) { newErrors ->
+                errors = newErrors
+            }
+
+            square = convertUriToBitmap(context, uri)
+            ownRecipeViewModel.addPhoto("square", uri)
+        }
     }
 
     Box(modifier = Modifier.background(Color.White)) {
@@ -152,6 +168,8 @@ fun CreateRecipeScreenOne(
                     .verticalScroll(rememberScrollState())
             ) {
                 Spacer(modifier = Modifier.height(20.dp))
+
+                // GALLERY
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                     CreateImageContainer(
                         height = 200.dp,
@@ -188,20 +206,36 @@ fun CreateRecipeScreenOne(
                         )
                     }
                 }
+                if (errors["photos"] != null && errors["photos"] != "") {
+                    Spacer(modifier = Modifier.height(5.dp))
+                    ErrorText(text = errors["photos"]!!)
+                }
                 Spacer(modifier = Modifier.height(16.dp))
+
+                // TITLE
                 Column {
 //                    Text(text = "Title", fontWeight = FontWeight.Bold)
 //                    Spacer(modifier = Modifier.height(10.dp))
                     FormBasicTextField(
                         value = newRecipe.title,
                         onValueChange = {
+                            clearError("title", errors) { newErrors ->
+                                errors = newErrors
+                            }
+
                             ownRecipeViewModel.setTitle(it)
                         },
                         placeholder = "What's the title of your recipe?",
                         borderColor = Color.Gray,
                     )
                 }
+                if (errors["title"] != null && errors["title"] != "") {
+                    Spacer(modifier = Modifier.height(5.dp))
+                    ErrorText(text = errors["title"]!!)
+                }
                 Spacer(modifier = Modifier.height(16.dp))
+
+                // DESCRIPTION
                 Column {
 //                    Text(text = "Description", fontWeight = FontWeight.Bold)
 //                    Spacer(modifier = Modifier.height(10.dp))
@@ -216,70 +250,102 @@ fun CreateRecipeScreenOne(
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
+
+                // PREPARATION TIME
                 RecipeTime(
                     name = "Preparation Time",
                     hr = newRecipe.prepTimeHr,
+                    maxHr = 48,
                     onHrChange = {
-                        if (it == newRecipe.prepTimeHr) return@RecipeTime
-
-                        println(it)
-                        val clearedErrors = HashMap<String, String>(errors.toMap())
-                        clearedErrors.remove("prepTimeHr")
-                        errors = clearedErrors
-
-                        val isInt = it.toIntOrNull()
-                        if (isInt != null || it == "") {
-                            ownRecipeViewModel.setPrepTimeHr(it)
-                        } else {
-                            val newErrors = HashMap<String, String>(errors.toMap())
-                            newErrors["prepTimeHr"] = "Can only input numbers."
+                        clearError("prepTime", errors) { newErrors ->
                             errors = newErrors
                         }
+
+                        ownRecipeViewModel.setPrepTimeHr(it)
                     },
                     min = newRecipe.prepTimeMin,
                     onMinChange = {
+                        clearError("prepTime", errors) { newErrors ->
+                            errors = newErrors
+                        }
+
                         ownRecipeViewModel.setPrepTimeMin(it)
+                    },
+                    errorName = "prepTime",
+                    errors = errors,
+                    setErrors = {
+                        errors = it
                     }
                 )
-                if (errors["prepTimeHr"] != null && errors["prepTimeHr"] != "") {
+                if (errors["prepTime"] != null && errors["prepTime"] != "") {
                     Spacer(modifier = Modifier.height(5.dp))
-                    Text(
-                        text = errors["prepTimeHr"]!!,
-                        color = Color.Red,
-                        fontSize = 12.sp,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    ErrorText(text = errors["prepTime"]!!, textAlign = TextAlign.End)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
+
+                // COOK TIME
                 RecipeTime(
                     name = "Cook Time",
                     hr = newRecipe.cookTimeHr,
+                    maxHr = 48,
                     onHrChange = {
+                        clearError("cookTime", errors) { newErrors ->
+                            errors = newErrors
+                        }
+
                         ownRecipeViewModel.setCookTimeHr(it)
                     },
                     min = newRecipe.cookTimeMin,
                     onMinChange = {
+                        clearError("cookTime", errors) { newErrors ->
+                            errors = newErrors
+                        }
+
                         ownRecipeViewModel.setCookTimeMin(it)
-                    }
+                    },
+                    errorName = "cookTime",
+                    errors = errors,
+                    setErrors = {
+                        errors = it
+                    },
                 )
+                if (errors["cookTime"] != null && errors["cookTime"] != "") {
+                    Spacer(modifier = Modifier.height(5.dp))
+                    ErrorText(text = errors["cookTime"]!!, textAlign = TextAlign.End)
+                }
                 Spacer(modifier = Modifier.height(16.dp))
+
+                // SERVING
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(text = "Serving", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold)
-                    FormBasicTextField(
+                    NumberFieldWithPlusMinusButtons(
                         value = newRecipe.serving,
+                        valueName = "serving",
+                        maxValue = 200,
+                        minValue = 1,
                         onValueChange = {
+                            clearError("serving", errors) { newErrors ->
+                                errors = newErrors
+                            }
+
                             ownRecipeViewModel.setServing(it)
                         },
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.weight(.29f),
-                        borderColor = Color.Gray,
-                        padding = 8.dp
+                        errorName = "serving",
+                        errors = errors,
+                        setErrors = {
+                            errors = it
+                        }
                     )
                 }
+                if (errors["serving"] != null && errors["serving"] != "") {
+                    Spacer(modifier = Modifier.height(5.dp))
+                    ErrorText(text = errors["serving"]!!, textAlign = TextAlign.End)
+                }
                 Spacer(modifier = Modifier.height(16.dp))
+
+                // DIFFICULTY
                 Column {
                     Text(text = "Difficulty", fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(10.dp))
@@ -317,6 +383,10 @@ fun CreateRecipeScreenOne(
                                 DropdownMenuItem(
                                     text = { Text(text = difficulty, fontSize = 16.sp) },
                                     onClick = {
+                                        clearError("difficulty", errors) { newErrors ->
+                                            errors = newErrors
+                                        }
+
                                         ownRecipeViewModel.setDifficulty(difficulty)
                                         showDifficultyDropdown = false
                                     },
@@ -325,7 +395,13 @@ fun CreateRecipeScreenOne(
                         }
                     }
                 }
+                if (errors["difficulty"] != null && errors["difficulty"] != "") {
+                    Spacer(modifier = Modifier.height(5.dp))
+                    ErrorText(text = errors["difficulty"]!!)
+                }
                 Spacer(modifier = Modifier.height(16.dp))
+
+                // MEAL TYPE
                 Column {
                     Text(text = "Meal Type", fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(10.dp))
@@ -335,6 +411,10 @@ fun CreateRecipeScreenOne(
                         CreateRecipeCard(
                             mealType,
                             onClick = {
+                                clearError("mealTypes", errors) { newErrors ->
+                                    errors = newErrors
+                                }
+
                                 if (isSelected == true) {
                                     ownRecipeViewModel.removeMealType(mealType)
                                 } else {
@@ -347,25 +427,39 @@ fun CreateRecipeScreenOne(
                         )
                     }
                 }
+                if (errors["mealTypes"] != null && errors["mealTypes"] != "") {
+                    Spacer(modifier = Modifier.height(5.dp))
+                    ErrorText(text = errors["mealTypes"]!!)
+                }
                 Spacer(modifier = Modifier.height(16.dp))
+
+                // MAIN CATEGORY
                 Column {
                     Text(text = "Main Category", fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(10.dp))
                     categories.forEach { category ->
-                        val isSelected = newRecipe.categories?.contains(category)
+                        val isSelected = newRecipe.categories.contains(category)
 
                         CreateRecipeCard(
                             category,
                             onClick = {
-                                if (isSelected == true) {
+                                clearError("categories", errors) { newErrors ->
+                                    errors = newErrors
+                                }
+
+                                if (isSelected) {
                                     ownRecipeViewModel.removeCategory(category)
                                 } else {
-                                    ownRecipeViewModel.addCategory(category)
+                                    if (newRecipe.categories.size == 3) {
+                                        Toast.makeText(context, "Maximum categories is 3.", Toast.LENGTH_LONG).show()
+                                    } else {
+                                        ownRecipeViewModel.addCategory(category)
+                                    }
                                 }
                             },
-                            borderColor = if (isSelected == true) { Green } else Color.Black,
-                            backgroundColor = if (isSelected == true) { Green.copy(.2f) } else Color.White,
-                            textColor = if (isSelected == true) { Color.Black } else Color.Black
+                            borderColor = if (isSelected) { Green } else Color.Black,
+                            backgroundColor = if (isSelected) { Green.copy(.2f) } else Color.White,
+                            textColor = if (isSelected) { Color.Black } else Color.Black
                         )
                     }
 //                    Icon(
@@ -393,14 +487,64 @@ fun CreateRecipeScreenOne(
 //                        tint = Color.Black
 //                    )
                 }
+                if (errors["categories"] != null && errors["categories"] != "") {
+                    Spacer(modifier = Modifier.height(5.dp))
+                    ErrorText(text = errors["categories"]!!)
+                }
 
-
+                // NEXT BUTTON
                 Spacer(modifier = Modifier.height(30.dp))
-                ColoredButton(onClick = { /*TODO*/ }, text = "Next", containerColor = Green, contentColor = Color.White)
+                if (errors["general"] != null && errors["general"] != "") {
+                    Spacer(modifier = Modifier.height(5.dp))
+                    ErrorText(text = errors["general"]!!, textAlign = TextAlign.Center)
+                    Spacer(modifier = Modifier.height(5.dp))
+                }
+                ColoredButton(
+                    onClick = {
+                        val newErrors = hashMapOf<String, String>()
+
+                        if (newRecipe.photos?.get("portrait") == null && newRecipe.photos?.get("landscape") == null && newRecipe.photos?.get("square") == null) {
+                            newErrors["photos"] = "At least one photo is required."
+                        }
+
+                        if (newRecipe.title.isEmpty()) {
+                            newErrors["title"] = "Title is required."
+                        }
+
+                        if (newRecipe.prepTimeHr == "0" && newRecipe.prepTimeMin == "0"
+                            && newRecipe.cookTimeHr == "0" && newRecipe.cookTimeMin == "0") {
+                            newErrors["prepTime"] = "Provide either preparation time or cook time."
+                            newErrors["cookTime"] = "Provide either preparation time or cook time."
+                        }
+
+                        if (newRecipe.difficulty.isEmpty()) {
+                            newErrors["difficulty"] = "Difficulty is required."
+                        }
+
+                        if (newRecipe.mealTypes.isEmpty()) {
+                            newErrors["mealTypes"] = "Select at least one meal type."
+                        }
+
+                        if (newRecipe.categories.isEmpty()) {
+                            newErrors["categories"] = "Select at least one category."
+                        }
+
+                        if (newErrors.size != 0) {
+                            newErrors["general"] = "Check your inputs for errors."
+                            errors = newErrors
+                        } else {
+                            onNavigateToCreateRecipeTwo()
+                        }
+                    },
+                    text = "Next",
+                    containerColor = Green,
+                    contentColor = Color.White
+                )
                 Spacer(modifier = Modifier.height(32.dp))
             }
         }
 
+        // ADD CATEGORY POPUP
         if (showAddCategory) {
             CreateCategory(
                 onCloseClick = { showAddCategory = false },
@@ -555,37 +699,162 @@ fun CreateCategory(onCloseClick: () -> Unit, onAddCategory: (String) -> Unit) {
 }
 
 @Composable
-fun RecipeTime(name: String, hr: String, onHrChange: (value: String) -> Unit, min: String, onMinChange: (value: String) -> Unit) {
+fun RecipeTime(
+    name: String,
+    hr: String,
+    maxHr: Int,
+    onHrChange: (value: String) -> Unit,
+    min: String,
+    onMinChange: (value: String) -> Unit,
+    errorName: String,
+    errors: HashMap<String, String>,
+    setErrors: (HashMap<String, String>) -> Unit
+) {
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Top
     ) {
         Text(text = name, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-        Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-            FormBasicTextField(
+        Column {
+            NumberFieldWithPlusMinusButtons(
                 value = hr,
+                valueName = "hours",
+                label = "hr",
+                maxValue = maxHr,
                 onValueChange = {
+                    clearError(errorName, errors) { newErrors ->
+                        setErrors(newErrors)
+                    }
+
                     onHrChange(it)
                 },
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f),
-                placeholder = "hr",
-                placeholderAlign = TextAlign.Center,
-                borderColor = Color.Gray,
-                padding = 8.dp
+                errorName = errorName,
+                errors = errors,
+                setErrors = {
+                    setErrors(it)
+                }
             )
-            Text(text = ":", fontWeight = FontWeight.Bold, modifier = Modifier.width(16.dp), textAlign = TextAlign.Center)
-            FormBasicTextField(
+            Spacer(modifier = Modifier.height(10.dp))
+            NumberFieldWithPlusMinusButtons(
                 value = min,
+                valueName = "minutes",
+                maxValue = 60,
+                label = "min",
                 onValueChange = {
+                    clearError(errorName, errors) { newErrors ->
+                        setErrors(newErrors)
+                    }
+
                     onMinChange(it)
                 },
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f),
-                placeholder = "min",
-                placeholderAlign = TextAlign.Center,
-                borderColor = Color.Gray,
-                padding = 8.dp
+                errorName = errorName,
+                errors = errors,
+                setErrors = {
+                    setErrors(it)
+                }
             )
         }
     }
+}
+
+@Composable
+fun NumberFieldWithPlusMinusButtons(
+    value: String,
+    valueName: String,
+    maxValue: Int,
+    minValue: Int = 0,
+    label: String? = null,
+    onValueChange: (String) -> Unit,
+    errorName: String,
+    errors: HashMap<String, String>,
+    setErrors: (HashMap<String, String>) -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.minus_icon),
+            contentDescription = null,
+            modifier = Modifier
+                .size(20.dp)
+                .clip(RoundedCornerShape(50))
+                .clickable {
+                    val intValue = value.toInt()
+
+                    if (intValue == minValue) {
+                        onValueChange(maxValue.toString())
+                    } else {
+                        onValueChange((intValue - 1).toString())
+                    }
+                },
+            tint = Green
+        )
+        Spacer(modifier = Modifier.width(5.dp))
+        FormBasicTextField(
+            value = value,
+            onValueChange = {
+                if (it == value) return@FormBasicTextField
+
+                var error = ""
+
+                val intValue = it.toIntOrNull()
+                if (intValue != null || it == "") {
+                    if (intValue != null && intValue > maxValue) {
+                        error = "Maximum $valueName is $maxValue."
+                    } else {
+                        val newValue = if (it == "") 0 else intValue?.plus(0)
+                        onValueChange(newValue.toString())
+                    }
+                } else {
+                    error = "Can only input numbers."
+                }
+
+                if (error != "") {
+                    val newErrors = HashMap<String, String>(errors.toMap())
+                    newErrors[errorName] = error
+                    setErrors(newErrors)
+                }
+            },
+            textAlign = TextAlign.Center,
+            modifier = Modifier.width(60.dp),
+            placeholderAlign = TextAlign.Center,
+            borderColor = Color.Gray,
+            padding = 8.dp
+        )
+        Spacer(modifier = Modifier.width(5.dp))
+        Icon(
+            imageVector = Icons.Filled.Add,
+            contentDescription = null,
+            modifier = Modifier
+                .size(20.dp)
+                .clip(RoundedCornerShape(50))
+                .clickable {
+                    val intValue = value.toInt()
+
+                    if (intValue == maxValue) {
+                        onValueChange(minValue.toString())
+                    } else {
+                        onValueChange((intValue + 1).toString())
+                    }
+               }
+            ,
+            tint = Green
+        )
+        if (label != null) {
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(text = label)
+        }
+    }
+}
+
+fun clearError(errorName: String, errors: HashMap<String, String>, setErrors: (HashMap<String, String>) -> Unit) {
+    val clearedErrors = HashMap<String, String>(errors.toMap())
+    clearedErrors.remove(errorName)
+    setErrors(clearedErrors)
+}
+
+fun setError(errorName: String, error: String, errors: HashMap<String, String>, setErrors: (HashMap<String, String>) -> Unit) {
+    val newErrors = HashMap<String, String>(errors.toMap())
+    newErrors[errorName] = error
+    setErrors(newErrors)
 }

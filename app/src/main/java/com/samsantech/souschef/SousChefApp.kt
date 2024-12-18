@@ -245,7 +245,10 @@ fun SousChefApp(
             composable<CreateRecipeOne> {
                 CreateRecipeScreenOne(
                     context,
-                    ownRecipeViewModel
+                    ownRecipeViewModel,
+                    onNavigateToCreateRecipeTwo = {
+                        navController.navigate(route = CreateRecipeTwo)
+                    }
                 )
             }
             composable<CreateRecipeTwo> {
