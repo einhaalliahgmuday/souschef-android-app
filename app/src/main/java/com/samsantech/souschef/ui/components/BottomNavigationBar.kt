@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,6 +33,7 @@ fun BottomNavigationBar(
     onNavigateToHome: () -> Unit,
     onNavigateToCreateRecipe: () -> Unit,
     onNavigateToSearch: () -> Unit,
+    onNavigateToTiktokVideos: () -> Unit,
     onNavigateToProfile: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -39,6 +41,7 @@ fun BottomNavigationBar(
         hashMapOf("name" to "Home", "imageVector" to Icons.Filled.Home),
         hashMapOf("name" to "Search", "imageVector" to Icons.Filled.Search),
         hashMapOf("name" to "Create recipe", "imageVector" to Icons.Filled.AddCircle),
+        hashMapOf("name" to "Tiktok videos", "imageVector" to Icons.Filled.PlayArrow),
         hashMapOf("name" to "Profile", "imageVector" to Icons.Filled.Person),
     )
 
@@ -55,14 +58,12 @@ fun BottomNavigationBar(
                 BottomNavigationItem(
                     selected = item["name"] == name,
                     onClick = {
-                        if (item["name"] == "Home") {
-                            onNavigateToHome()
-                        } else if (item["name"] == "Create recipe") {
-                            onNavigateToCreateRecipe()
-                        } else if (item["name"] == "Search") {
-                            onNavigateToSearch()
-                        } else if (item["name"] == "Profile") {
-                            onNavigateToProfile()
+                        when (item["name"]) {
+                            "Home" -> onNavigateToHome()
+                            "Create recipe" -> onNavigateToCreateRecipe()
+                            "Search" -> onNavigateToSearch()
+                            "Tiktok videos" -> onNavigateToTiktokVideos()
+                            "Profile" -> onNavigateToProfile()
                         }
                     },
                     selectedContentColor = Yellow,

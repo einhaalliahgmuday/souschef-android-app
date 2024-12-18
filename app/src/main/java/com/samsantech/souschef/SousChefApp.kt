@@ -31,6 +31,7 @@ import com.samsantech.souschef.ui.SignUpScreen
 import com.samsantech.souschef.ui.UpdateEmailScreen
 import com.samsantech.souschef.ui.VerifyEmailScreen
 import com.samsantech.souschef.ui.components.ContentBottomNavigationWrapper
+import com.samsantech.souschef.ui.TiktokVideosScreen
 import com.samsantech.souschef.viewmodel.AuthViewModel
 import com.samsantech.souschef.viewmodel.OwnRecipeViewModel
 import com.samsantech.souschef.viewmodel.UserViewModel
@@ -192,6 +193,9 @@ fun SousChefApp(
                     onNavigateToSearch = {
                         navController.navigate(route = Profile)
                     },
+                    onNavigateToTiktokVideos = {
+                        navController.navigate(route = TiktokVideos)
+                    },
                     onNavigateToProfile = {
                         navController.navigate(route = Profile) {
                             popUpTo(Profile) { inclusive = true }
@@ -212,6 +216,9 @@ fun SousChefApp(
                     },
                     onNavigateToSearch = {
                         navController.navigate(route = Profile)
+                    },
+                    onNavigateToTiktokVideos = {
+                        navController.navigate(route = TiktokVideos)
                     },
                     onNavigateToProfile = {
                         navController.navigate(route = Profile) {
@@ -249,6 +256,10 @@ fun SousChefApp(
             }
             composable<CreateRecipeFour> {
                 CreateRecipeScreenFour()
+            }
+            composable<TiktokVideos> {
+                TiktokVideosScreen()
+
             }
         }
     }
@@ -319,3 +330,6 @@ object CreateRecipeThree
 
 @Serializable
 object CreateRecipeFour
+
+@Serializable
+object TiktokVideos
