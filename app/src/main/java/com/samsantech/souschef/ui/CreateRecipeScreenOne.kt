@@ -2,14 +2,12 @@ package com.samsantech.souschef.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -48,7 +46,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -57,6 +54,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
+import coil3.compose.AsyncImage
 import com.samsantech.souschef.R
 import com.samsantech.souschef.ui.components.ColoredButton
 import com.samsantech.souschef.ui.components.ErrorText
@@ -64,6 +62,7 @@ import com.samsantech.souschef.ui.components.FormBasicTextField
 import com.samsantech.souschef.ui.components.OwnRecipeHeader
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Yellow
+import com.samsantech.souschef.utils.OwnRecipeAction
 import com.samsantech.souschef.utils.convertUriToBitmap
 import com.samsantech.souschef.viewmodel.OwnRecipesViewModel
 
@@ -75,7 +74,8 @@ fun CreateRecipeScreenOne(
     onNavigateToCreateRecipeTwo: () -> Unit,
     closeCreateRecipe: () -> Unit
 ) {
-    val newRecipe by ownRecipesViewModel.newRecipe.collectAsState()
+    val recipe by ownRecipesViewModel.recipe.collectAsState()
+    val action by ownRecipesViewModel.action.collectAsState()
 
     var categories by remember {
 //        mutableStateOf(arrayOf("Chicken", "Pork", "Beef", "Seafood", "Vegetables", "Dessert", "Drink"))
@@ -85,13 +85,13 @@ fun CreateRecipeScreenOne(
     val difficulty = arrayOf("Easy", "Medium", "Hard")
 //    val courses = arrayOf("Main", "Side", "Appetizer", "Dessert", "Drink")
     var portrait by remember {
-        mutableStateOf<Bitmap?>(null)
+        mutableStateOf<Uri?>(null)
     }
     var landscape by remember {
-        mutableStateOf<Bitmap?>(null)
+        mutableStateOf<Uri?>(null)
     }
     var square by remember {
-        mutableStateOf<Bitmap?>(null)
+        mutableStateOf<Uri?>(null)
     }
 
     var showDifficultyDropdown by remember {
@@ -112,7 +112,8 @@ fun CreateRecipeScreenOne(
                 errors = newErrors
             }
 
-            portrait = convertUriToBitmap(context, uri)
+            portrait = uri
+//            portrait = convertUriToBitmap(context, uri)
             ownRecipesViewModel.addPhoto("portrait", uri)
         }
     }
@@ -124,7 +125,8 @@ fun CreateRecipeScreenOne(
                 errors = newErrors
             }
 
-            landscape = convertUriToBitmap(context, uri)
+            landscape = uri
+//            landscape = convertUriToBitmap(context, uri)
             ownRecipesViewModel.addPhoto("landscape", uri)
         }
     }
@@ -136,7 +138,8 @@ fun CreateRecipeScreenOne(
                 errors = newErrors
             }
 
-            square = convertUriToBitmap(context, uri)
+            square = uri
+//            square = convertUriToBitmap(context, uri)
             ownRecipesViewModel.addPhoto("square", uri)
         }
     }
@@ -157,7 +160,14 @@ fun CreateRecipeScreenOne(
                     CreateImageContainer(
                         height = 200.dp,
                         width = 113.dp,
-                        imageBitmap = portrait,
+                        image  = if (action == OwnRecipeAction.EDIT)
+                                    if (portrait != null) portrait
+                                    else if (recipe.photosUrl["portrait"] != null) {
+                                        Uri.parse(recipe.photosUrl["portrait"].toString())
+                                    } else {
+                                        null
+                                    }
+                                else portrait,
                         pickImage = pickImagePortrait,
                         onRemoveClick = {
                             portrait = null
@@ -169,7 +179,14 @@ fun CreateRecipeScreenOne(
                         CreateImageContainer(
                             height = 113.dp,
                             width = 200.dp,
-                            imageBitmap = landscape,
+                            image  = if (action == OwnRecipeAction.EDIT)
+                                        if (landscape != null) landscape
+                                        else if (recipe.photosUrl["landscape"] != null) {
+                                            Uri.parse(recipe.photosUrl["landscape"].toString())
+                                        } else {
+                                            null
+                                        }
+                                    else landscape,
                             pickImage = pickImageLandscape,
                             onRemoveClick = {
                                 landscape = null
@@ -180,7 +197,14 @@ fun CreateRecipeScreenOne(
                         CreateImageContainer(
                             height = 150.dp,
                             width = 150.dp,
-                            imageBitmap = square,
+                            image  = if (action == OwnRecipeAction.EDIT)
+                                        if (square != null) square
+                                        else if (recipe.photosUrl["square"] != null) {
+                                            Uri.parse(recipe.photosUrl["square"].toString())
+                                        } else {
+                                            null
+                                        }
+                                    else square,
                             pickImage = pickImageSquare,
                             onRemoveClick = {
                                 square = null
@@ -200,7 +224,7 @@ fun CreateRecipeScreenOne(
 //                    Text(text = "Title", fontWeight = FontWeight.Bold)
 //                    Spacer(modifier = Modifier.height(10.dp))
                     FormBasicTextField(
-                        value = newRecipe.title,
+                        value = recipe.title,
                         onValueChange = {
                             clearError("title", errors) { newErrors ->
                                 errors = newErrors
@@ -223,7 +247,7 @@ fun CreateRecipeScreenOne(
 //                    Text(text = "Description", fontWeight = FontWeight.Bold)
 //                    Spacer(modifier = Modifier.height(10.dp))
                     FormBasicTextField(
-                        value = newRecipe.description,
+                        value = recipe.description,
                         onValueChange = {
                             ownRecipesViewModel.setDescription(it)
                         },
@@ -237,7 +261,7 @@ fun CreateRecipeScreenOne(
                 // PREPARATION TIME
                 RecipeTime(
                     name = "Preparation Time",
-                    hr = newRecipe.prepTimeHr,
+                    hr = recipe.prepTimeHr,
                     maxHr = 48,
                     onHrChange = {
                         clearError("prepTime", errors) { newErrors ->
@@ -246,7 +270,7 @@ fun CreateRecipeScreenOne(
 
                         ownRecipesViewModel.setPrepTimeHr(it)
                     },
-                    min = newRecipe.prepTimeMin,
+                    min = recipe.prepTimeMin,
                     onMinChange = {
                         clearError("prepTime", errors) { newErrors ->
                             errors = newErrors
@@ -269,7 +293,7 @@ fun CreateRecipeScreenOne(
                 // COOK TIME
                 RecipeTime(
                     name = "Cook Time",
-                    hr = newRecipe.cookTimeHr,
+                    hr = recipe.cookTimeHr,
                     maxHr = 48,
                     onHrChange = {
                         clearError("cookTime", errors) { newErrors ->
@@ -278,7 +302,7 @@ fun CreateRecipeScreenOne(
 
                         ownRecipesViewModel.setCookTimeHr(it)
                     },
-                    min = newRecipe.cookTimeMin,
+                    min = recipe.cookTimeMin,
                     onMinChange = {
                         clearError("cookTime", errors) { newErrors ->
                             errors = newErrors
@@ -304,7 +328,7 @@ fun CreateRecipeScreenOne(
                 ) {
                     Text(text = "Serving", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold)
                     NumberFieldWithPlusMinusButtons(
-                        value = newRecipe.serving,
+                        value = recipe.serving,
                         valueName = "serving",
                         maxValue = 200,
                         minValue = 1,
@@ -334,7 +358,7 @@ fun CreateRecipeScreenOne(
                     Spacer(modifier = Modifier.height(10.dp))
                     Box {
                         Text(
-                            text = if (newRecipe.difficulty != "") newRecipe.difficulty else "Select difficulty",
+                            text = if (recipe.difficulty != "") recipe.difficulty else "Select difficulty",
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
@@ -373,6 +397,8 @@ fun CreateRecipeScreenOne(
                                         ownRecipesViewModel.setDifficulty(difficulty)
                                         showDifficultyDropdown = false
                                     },
+                                    modifier = Modifier
+                                        .background(if (difficulty == recipe.difficulty) Green.copy(.2f) else Color.White)
                                 )
                             }
                         }
@@ -389,7 +415,7 @@ fun CreateRecipeScreenOne(
                     Text(text = "Meal Type", fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(10.dp))
                     mealTypes.forEach { mealType ->
-                        val isSelected = newRecipe.mealTypes.contains(mealType)
+                        val isSelected = recipe.mealTypes.contains(mealType)
 
                         CreateRecipeCard(
                             mealType,
@@ -421,7 +447,7 @@ fun CreateRecipeScreenOne(
                     Text(text = "Main Category", fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(10.dp))
                     categories.forEach { category ->
-                        val isSelected = newRecipe.categories.contains(category)
+                        val isSelected = recipe.categories.contains(category)
 
                         CreateRecipeCard(
                             category,
@@ -433,7 +459,7 @@ fun CreateRecipeScreenOne(
                                 if (isSelected) {
                                     ownRecipesViewModel.removeCategory(category)
                                 } else {
-                                    if (newRecipe.categories.size == 3) {
+                                    if (recipe.categories.size == 3) {
                                         Toast.makeText(context, "Maximum categories is 3.", Toast.LENGTH_LONG).show()
                                     } else {
                                         ownRecipesViewModel.addCategory(category)
@@ -462,29 +488,29 @@ fun CreateRecipeScreenOne(
                     onClick = {
                         val newErrors = hashMapOf<String, String>()
 
-                        if (newRecipe.photosUri["portrait"] == null && newRecipe.photosUri["landscape"] == null && newRecipe.photosUri["square"] == null) {
+                        if (action != OwnRecipeAction.EDIT && (recipe.photosUri["portrait"] == null && recipe.photosUri["landscape"] == null && recipe.photosUri["square"] == null)) {
                             newErrors["photos"] = "At least one photo is required."
                         }
 
-                        if (newRecipe.title.isEmpty()) {
+                        if (recipe.title.isEmpty()) {
                             newErrors["title"] = "Title is required."
                         }
 
-                        if (newRecipe.prepTimeHr == "0" && newRecipe.prepTimeMin == "0"
-                            && newRecipe.cookTimeHr == "0" && newRecipe.cookTimeMin == "0") {
+                        if (recipe.prepTimeHr == "0" && recipe.prepTimeMin == "0"
+                            && recipe.cookTimeHr == "0" && recipe.cookTimeMin == "0") {
                             newErrors["prepTime"] = "Provide either preparation time or cook time."
                             newErrors["cookTime"] = "Provide either preparation time or cook time."
                         }
 
-                        if (newRecipe.difficulty.isEmpty()) {
+                        if (recipe.difficulty.isEmpty()) {
                             newErrors["difficulty"] = "Difficulty is required."
                         }
 
-                        if (newRecipe.mealTypes.isEmpty()) {
+                        if (recipe.mealTypes.isEmpty()) {
                             newErrors["mealTypes"] = "Select at least one meal type."
                         }
 
-                        if (newRecipe.categories.isEmpty()) {
+                        if (recipe.categories.isEmpty()) {
                             newErrors["categories"] = "Select at least one category."
                         }
 
@@ -523,7 +549,7 @@ fun CreateRecipeScreenOne(
 fun CreateImageContainer(
     height: Dp,
     width: Dp,
-    imageBitmap: Bitmap?,
+    image: Uri?,
     pickImage: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
     onRemoveClick: () -> Unit
 ) {
@@ -542,9 +568,9 @@ fun CreateImageContainer(
                 },
             contentAlignment = Alignment.Center
         ){
-            if (imageBitmap != null) {
-                Image(
-                    bitmap = imageBitmap.asImageBitmap(),
+            if (image != null) {
+                AsyncImage(
+                    model = "$image",
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -560,7 +586,7 @@ fun CreateImageContainer(
                 )
             }
         }
-        if (imageBitmap != null) {
+        if (image != null) {
             Icon(
                 imageVector = Icons.Filled.Close,
                 contentDescription = null,

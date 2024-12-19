@@ -53,7 +53,7 @@ fun CreateRecipeScreenThree(
     onNavigateToCreateRecipeFour: () -> Unit,
     closeCreateRecipe: () -> Unit
 ) {
-    val newRecipe by ownRecipesViewModel.newRecipe.collectAsState()
+    val recipe by ownRecipesViewModel.recipe.collectAsState()
 
     var error by remember {
         mutableStateOf("")
@@ -75,7 +75,7 @@ fun CreateRecipeScreenThree(
                     Text(text = "Instructions", fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    newRecipe.instructions.forEachIndexed { index, instruction ->
+                    recipe.instructions.forEachIndexed { index, instruction ->
                         val stepNumber = index + 1
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -139,7 +139,7 @@ fun CreateRecipeScreenThree(
                     onFirstButtonClick = onNavigateToCreateRecipeTwo,
                     secondButtonText = "Next",
                     onSecondButtonClick = {
-                        val newInstructions = newRecipe.instructions.toMutableList()
+                        val newInstructions = recipe.instructions.toMutableList()
                         newInstructions.removeAll { it.trim().isBlank() }
 
                         if(newInstructions.size == 0) {

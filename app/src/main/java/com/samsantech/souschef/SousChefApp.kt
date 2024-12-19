@@ -238,7 +238,8 @@ fun SousChefApp(
                         userViewModel,
                         ownRecipesViewModel,
                         onNavigateToEditProfile = { navController.navigate(route = EditProfile) },
-                        onNavigateToRecipe = { navController.navigate(route = Recipe) }
+                        onNavigateToRecipe = { navController.navigate(route = Recipe) },
+                        onNavigateToCreateRecipeOne = { navController.navigate(route = CreateRecipeOne) }
                     )
                 }
             }

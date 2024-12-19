@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import coil3.compose.AsyncImage
 import com.samsantech.souschef.R
+import com.samsantech.souschef.data.Recipe
 import com.samsantech.souschef.ui.components.ColoredButton
 import com.samsantech.souschef.ui.components.ConfirmDialog
 import com.samsantech.souschef.ui.components.Dialog
@@ -69,6 +70,7 @@ import com.samsantech.souschef.ui.components.ProgressSpinner
 import com.samsantech.souschef.ui.components.BottomActionMenuPopUp
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
+import com.samsantech.souschef.utils.OwnRecipeAction
 import com.samsantech.souschef.utils.convertUriToBitmap
 import com.samsantech.souschef.viewmodel.OwnRecipesViewModel
 import com.samsantech.souschef.viewmodel.UserViewModel
@@ -82,7 +84,8 @@ fun ProfileScreen(
     userViewModel: UserViewModel,
     ownRecipesViewModel: OwnRecipesViewModel,
     onNavigateToEditProfile: () -> Unit,
-    onNavigateToRecipe: () -> Unit
+    onNavigateToRecipe: () -> Unit,
+    onNavigateToCreateRecipeOne: () -> Unit
 ) {
     val user by userViewModel.user.collectAsState()
     val ownRecipes by ownRecipesViewModel.recipes.collectAsState()
@@ -105,7 +108,7 @@ fun ProfileScreen(
     var showRecipeActionMenu by remember {
         mutableStateOf(false)
     }
-    var recipeIdWithAction: String? by remember {
+    var recipeWithAction: Recipe? by remember {
         mutableStateOf(null)
     }
     var showDeleteConfirmation by remember {
@@ -302,56 +305,10 @@ fun ProfileScreen(
                                                 .clip(RoundedCornerShape(100))
                                                 .clickable {
                                                     showRecipeActionMenu = !showRecipeActionMenu
-                                                    recipeIdWithAction =
-                                                        if (recipeIdWithAction == null) recipe.id else null
+                                                    recipeWithAction =
+                                                        if (recipeWithAction == null) recipe else null
                                                 }
                                         )
-
-//                                        if (showActionMenu && recipeIdWithAction == recipe.id) {
-//                                            Column(
-//                                                modifier = Modifier
-//                                                    .zIndex(100f)
-//                                                    .width(90.dp)
-//                                                    .align(Alignment.TopEnd)
-//                                                    .offset((-3).dp, 28.dp)
-//                                                    .background(
-//                                                        Color.White,
-//                                                        RoundedCornerShape(5.dp)
-//                                                    )
-//                                                    .border(
-//                                                        1.dp,
-//                                                        Color.Black.copy(.5f),
-//                                                        RoundedCornerShape(5.dp)
-//                                                    )
-//                                            ) {
-//                                                Text(
-//                                                    text = "Delete",
-//                                                    modifier = Modifier
-//                                                        .clip(RoundedCornerShape(5.dp))
-//                                                        .fillMaxWidth()
-//                                                        .clickable {
-//                                                            showDeleteConfirmation = true
-//                                                            showActionMenu = false
-//                                                        }
-//                                                        .padding(10.dp, 5.dp)
-//                                                )
-//                                                Spacer(
-//                                                    modifier = Modifier
-//                                                        .height(1.dp)
-//                                                        .fillMaxWidth()
-//                                                        .background(Color.LightGray)
-//                                                )
-//                                                Text(
-//                                                    text = "Edit",
-//                                                    modifier = Modifier
-//                                                        .clip(RoundedCornerShape(5.dp))
-//                                                        .fillMaxWidth()
-//                                                        .clickable { }
-//                                                        .padding(10.dp, 5.dp)
-//                                                )
-//                                            }
-//                                        }
-
                                     }
                                 }
                             }
@@ -440,11 +397,17 @@ fun ProfileScreen(
                 if (key == "Delete") {
                     showDeleteConfirmation = true
                     showRecipeActionMenu = false
+                } else if (key == "Edit") {
+                    showRecipeActionMenu = false
+                    ownRecipesViewModel.action.value = OwnRecipeAction.EDIT
+                    ownRecipesViewModel.recipe.value = recipeWithAction!!
+                    ownRecipesViewModel.originalData.value = recipeWithAction!!
+                    onNavigateToCreateRecipeOne()
                 }
             },
             onOutsideClick = {
                 showRecipeActionMenu = false
-                recipeIdWithAction = null
+                recipeWithAction = null
             }
         )
     }
@@ -455,15 +418,15 @@ fun ProfileScreen(
             buttonOkayName = "Yes",
             onClickCancel = {
                 showDeleteConfirmation = false
-                recipeIdWithAction = null
+                recipeWithAction = null
             },
             onClickOkay = {
                 showDeleteConfirmation = false
 
-                if (recipeIdWithAction != null) {
+                if (recipeWithAction != null) {
                     loading = true
 
-                    ownRecipesViewModel.deleteRecipe(recipeIdWithAction!!) { isSuccess, err ->
+                    ownRecipesViewModel.deleteRecipe(recipeWithAction!!.id!!) { isSuccess, err ->
                         loading = false
 
                         if (isSuccess) {
@@ -472,6 +435,8 @@ fun ProfileScreen(
                             error = err
                         }
                     }
+
+                    recipeWithAction = null
                 }
             }
         )

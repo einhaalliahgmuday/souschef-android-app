@@ -32,7 +32,7 @@ class FirebaseRecipeManager(
                             userPhotoUrl = data["userPhotoUrl"].toString(),
                             photosUrl = data["photosUrl"] as? HashMap<String, Uri> ?: hashMapOf(),
                             title = data["title"].toString(),
-                            description = data["description"].toString(),
+                            description = if (data["description"] != null) data["description"].toString() else "",
                             prepTimeHr = data["prepTimeHr"].toString(),
                             prepTimeMin = data["prepTimeMin"].toString(),
                             cookTimeHr = data["cookTimeHr"].toString(),
@@ -55,15 +55,21 @@ class FirebaseRecipeManager(
         }
     }
 
-    fun addRecipe(recipe: Recipe, user: User, callback: (Boolean, String?) -> Unit, uploadedRecipe: (Recipe) -> Unit) {
+    fun addRecipe(
+        recipe: Recipe,
+        user: User,
+        callback: (Boolean, String?) -> Unit,
+        updatedRecipe: (Recipe) -> Unit
+    ) {
         val data = hashMapOf(
             "userId" to user.uid,
             "userName" to user.username,
             "userPhotoUrl" to user.photoUrl,
             "title" to recipe.title,
             "serving" to recipe.serving,
+            "difficulty" to recipe.difficulty,
             "mealTypes" to recipe.mealTypes,
-            "category" to recipe.categories,
+            "categories" to recipe.categories,
             "ingredients" to recipe.ingredients,
             "instructions" to recipe.instructions,
         )
@@ -82,46 +88,19 @@ class FirebaseRecipeManager(
 
                 // on success, upload the recipe photos
                 if (recipe.photosUri.size > 0) {
-                    val storageRef = storage.reference
-                    val recipesRef = storageRef.child("recipes/${recipeDocRefId}")
-
-                    recipe.photosUri.forEach { photo ->
-                        val uploadRef = recipesRef.child("${photo.key}.jpg")
-                        val uploadTask = uploadRef.putFile(photo.value)
-
-                        uploadTask.continueWithTask { task ->
-                            if (!task.isSuccessful) {
-                                println(task.exception)
-                            }
-
-                            uploadRef.downloadUrl
-                        }.addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                val downloadUri = task.result
-                                val url = Uri.parse("$downloadUri")
-
-                                // update the recipe in db - adds the url of photos
-                                val recipeRef = db.collection("recipes").document(recipeDocRefId)
-                                recipeRef.update(
-                                    mapOf(
-                                        "photosUrl.${photo.key}" to url
-                                    )
-                                )
-                                    .addOnSuccessListener {
-                                        recipe.photosUrl[photo.key] = url
-                                        uploadedRecipe(recipe)
-                                    }
-                                    .addOnFailureListener {
-                                        println(it)
-                                    }
-                                    .addOnCompleteListener {
-                                        callback(true, null)
-                                    }
-                            } else {
-                                callback(true, null)
-                            }
+                    uploadRecipePhotos(
+                        recipeDocRefId,
+                        recipe.photosUri,
+                        recipe,
+                        updatedRecipe = {
+                            updatedRecipe(it)
+                        },
+                        callback = { isSuccess, err ->
+                            callback(isSuccess, err)
                         }
-                    }
+                    )
+                } else {
+                    callback(true, null)
                 }
             }
             .addOnFailureListener {
@@ -129,15 +108,106 @@ class FirebaseRecipeManager(
             }
     }
 
+    fun updateRecipe(
+        document: String,
+        data: HashMap<String, Any>,
+        recipe: Recipe,
+        updatedRecipe: (Recipe) -> Unit,
+        callback: (Boolean, String?) -> Unit
+    ) {
+        if (recipe.photosUri.size > 0) {
+            uploadRecipePhotos(
+                document,
+                recipe.photosUri,
+                recipe,
+                updatedRecipe = {
+                    updatedRecipe(it)
+                },
+                callback = { isSuccess, err ->
+                    if (data.isEmpty()) {
+                        callback(isSuccess, err)
+                    }
+                }
+            )
+        }
+        if (data.isNotEmpty()) {
+            db.collection("recipes")
+                .document(document)
+                .update(
+                    data
+                )
+                .addOnSuccessListener {
+                    callback(true, null)
+                }
+                .addOnFailureListener {
+                    callback(false, getErrorMessage(it))
+                }
+        }
+    }
+
     fun deleteRecipe(document: String, callback: (Boolean, String?) -> Unit) {
         db.collection("recipes")
             .document(document)
             .delete()
             .addOnSuccessListener {
-                callback(true, null)
+                val storageRef = storage.reference
+                val recipesRef = storageRef.child("recipes/${document}")
+
+                recipesRef.delete().addOnCompleteListener {
+                    callback(true, null)
+                }
             }
             .addOnFailureListener {
                 callback(false, getErrorMessage(it))
             }
+    }
+
+    private fun uploadRecipePhotos(
+        document: String,
+        photosUri: Map<String, Uri>,
+        recipe: Recipe,
+        updatedRecipe: (Recipe) -> Unit,
+        callback: (Boolean, String?) -> Unit
+    ) {
+        val storageRef = storage.reference
+        val recipesRef = storageRef.child("recipes/${document}")
+
+        photosUri.forEach { photo ->
+            val uploadRef = recipesRef.child("${photo.key}.jpg")
+            val uploadTask = uploadRef.putFile(photo.value)
+
+            uploadTask.continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    println(task.exception)
+                }
+
+                uploadRef.downloadUrl
+            }.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val downloadUri = task.result
+                    val url = Uri.parse("$downloadUri")
+
+                    // update the recipe in db - adds the url of photos
+                    val recipeRef = db.collection("recipes").document(document)
+                    recipeRef.update(
+                        mapOf(
+                            "photosUrl.${photo.key}" to url
+                        )
+                    )
+                        .addOnSuccessListener {
+                            recipe.photosUrl[photo.key] = url
+                            updatedRecipe(recipe)
+                        }
+                        .addOnFailureListener {
+                            println(it)
+                        }
+                        .addOnCompleteListener {
+                            callback(true, null)
+                        }
+                } else {
+                    callback(true, null)
+                }
+            }
+        }
     }
 }
