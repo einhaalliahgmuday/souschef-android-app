@@ -1,9 +1,13 @@
 package com.samsantech.souschef
 
+import android.os.Build
 import android.os.Bundle
+import android.view.WindowInsets
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
@@ -22,6 +26,20 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SousChefTheme {
+                val insets = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    val windowInsets = this.window.decorView.rootWindowInsets
+                    windowInsets?.getInsets(WindowInsets.Type.systemBars())?.bottom ?: 0
+                } else {
+                    val resources = this.resources
+                    val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+                    if (resourceId > 0) {
+                        resources.getDimensionPixelSize(resourceId)
+                    } else {
+                        0
+                    }
+                }
+                val systemNavigationBarHeight = (insets / LocalDensity.current.density).dp
+
                 val auth = Firebase.auth
                 val db = Firebase.firestore
                 val storage = Firebase.storage
@@ -37,6 +55,7 @@ class MainActivity : ComponentActivity() {
                 val ownRecipesViewModel = OwnRecipesViewModel(userViewModel, firebaseRecipeManager)
 
                 SousChefApp(
+                    systemNavigationBarHeight,
                     user,
                     activity = this,
                     context = this,

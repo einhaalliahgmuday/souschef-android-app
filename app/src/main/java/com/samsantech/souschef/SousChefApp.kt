@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.Dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -39,6 +40,7 @@ import kotlinx.serialization.Serializable
 
 @Composable
 fun SousChefApp(
+    systemNavigationBarHeight: Dp,
     user: FirebaseUser?,
     activity: ComponentActivity,
     context: Context,
@@ -185,6 +187,7 @@ fun SousChefApp(
             }
             composable<Home> {
                 ContentBottomNavigationWrapper(
+                    systemNavigationBarHeight,
                     name = "Home",
                     onNavigateToHome = {
                         navController.navigate(route = Home)
@@ -209,6 +212,7 @@ fun SousChefApp(
             }
             composable<Profile> {
                 ContentBottomNavigationWrapper(
+                    systemNavigationBarHeight,
                     name = "Profile",
                     onNavigateToHome = {
                         navController.navigate(route = Home)
@@ -229,6 +233,7 @@ fun SousChefApp(
                     },
                 ) { paddingValues ->
                     ProfileScreen(
+                        paddingValues,
                         context,
                         userViewModel,
                         ownRecipesViewModel,
@@ -239,6 +244,7 @@ fun SousChefApp(
             }
             composable<Search> {
                 ContentBottomNavigationWrapper(
+                    systemNavigationBarHeight,
                     name = "Search",
                     onNavigateToHome = {
                         navController.navigate(route = Home)
