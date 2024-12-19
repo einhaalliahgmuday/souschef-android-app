@@ -40,7 +40,7 @@ import com.samsantech.souschef.ui.components.CreateRecipeBottomButtons
 import com.samsantech.souschef.ui.components.FormBasicTextField
 import com.samsantech.souschef.ui.components.OwnRecipeHeader
 import com.samsantech.souschef.ui.components.ProgressSpinner
-import com.samsantech.souschef.ui.components.SuccessDialog
+import com.samsantech.souschef.ui.components.Dialog
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Yellow
 import com.samsantech.souschef.viewmodel.OwnRecipesViewModel
@@ -174,11 +174,11 @@ fun CreateRecipeScreenFour(
         }
 
         if (success) {
-            SuccessDialog(
+            Dialog(
+                icon = "success",
                 message = "Recipe uploaded successfully!",
                 subMessage = null,
-                buttonName = "OK",
-                onClick = {
+                onCloseClick = {
                     closeCreateRecipe()
                     success = false
                 }
