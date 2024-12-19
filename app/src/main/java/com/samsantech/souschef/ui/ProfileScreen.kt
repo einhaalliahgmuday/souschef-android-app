@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -34,6 +35,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -55,12 +57,16 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import coil3.compose.AsyncImage
+import com.samsantech.souschef.R
 import com.samsantech.souschef.ui.components.ColoredButton
+import com.samsantech.souschef.ui.components.ConfirmDialog
+import com.samsantech.souschef.ui.components.Dialog
 import com.samsantech.souschef.ui.components.DisplayProfileImage
 import com.samsantech.souschef.ui.components.Header
 import com.samsantech.souschef.ui.components.ProgressSpinner
-import com.samsantech.souschef.ui.components.UploadImagePopUp
+import com.samsantech.souschef.ui.components.BottomActionMenuPopUp
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 import com.samsantech.souschef.utils.convertUriToBitmap
@@ -71,6 +77,7 @@ import com.samsantech.souschef.viewmodel.UserViewModel
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ProfileScreen(
+    paddingValues: PaddingValues,
     context: Context,
     userViewModel: UserViewModel,
     ownRecipesViewModel: OwnRecipesViewModel,
@@ -95,6 +102,21 @@ fun ProfileScreen(
     var show by remember {
         mutableStateOf("recipes")
     }
+    var showRecipeActionMenu by remember {
+        mutableStateOf(false)
+    }
+    var recipeIdWithAction: String? by remember {
+        mutableStateOf(null)
+    }
+    var showDeleteConfirmation by remember {
+        mutableStateOf(false)
+    }
+    var successDelete by remember {
+        mutableStateOf(false)
+    }
+    var error:String? by remember {
+        mutableStateOf(null)
+    }
 
     val activityResultLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
@@ -111,7 +133,7 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 20.dp)
-                    .padding(bottom = 60.dp)
+                    .padding(paddingValues)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -239,7 +261,7 @@ fun ProfileScreen(
                                 horizontalArrangement = Arrangement.spacedBy(5.dp),
                                 verticalArrangement = Arrangement.spacedBy(5.dp)
                             ) {
-                                ownRecipes.forEach { recipe ->
+                                ownRecipes.forEachIndexed { index, recipe ->
                                     val photoUrl: Uri? = if (recipe.photosUrl["portrait"] != null) {
                                         Uri.parse("${recipe.photosUrl["portrait"]}")
                                     } else if (recipe.photosUrl["square"] != null) {
@@ -250,7 +272,7 @@ fun ProfileScreen(
 
                                     Box(
                                         modifier = Modifier
-                                            .clip(RoundedCornerShape(5.dp))
+                                            .zIndex(-1f)
                                             .height(180.dp)
                                             .width((maxWidth / 3) - 10.dp)
                                             .background(Color.White)
@@ -268,7 +290,68 @@ fun ProfileScreen(
                                             contentScale = ContentScale.Crop,
                                             modifier = Modifier
                                                 .fillMaxSize()
+                                                .clip(RoundedCornerShape(5.dp))
                                         )
+                                        Icon(
+                                            imageVector = Icons.Filled.MoreVert,
+                                            contentDescription = null,
+                                            tint = Color.White,
+                                            modifier = Modifier
+                                                .align(Alignment.TopEnd)
+                                                .offset(5.dp, 3.dp)
+                                                .clip(RoundedCornerShape(100))
+                                                .clickable {
+                                                    showRecipeActionMenu = !showRecipeActionMenu
+                                                    recipeIdWithAction =
+                                                        if (recipeIdWithAction == null) recipe.id else null
+                                                }
+                                        )
+
+//                                        if (showActionMenu && recipeIdWithAction == recipe.id) {
+//                                            Column(
+//                                                modifier = Modifier
+//                                                    .zIndex(100f)
+//                                                    .width(90.dp)
+//                                                    .align(Alignment.TopEnd)
+//                                                    .offset((-3).dp, 28.dp)
+//                                                    .background(
+//                                                        Color.White,
+//                                                        RoundedCornerShape(5.dp)
+//                                                    )
+//                                                    .border(
+//                                                        1.dp,
+//                                                        Color.Black.copy(.5f),
+//                                                        RoundedCornerShape(5.dp)
+//                                                    )
+//                                            ) {
+//                                                Text(
+//                                                    text = "Delete",
+//                                                    modifier = Modifier
+//                                                        .clip(RoundedCornerShape(5.dp))
+//                                                        .fillMaxWidth()
+//                                                        .clickable {
+//                                                            showDeleteConfirmation = true
+//                                                            showActionMenu = false
+//                                                        }
+//                                                        .padding(10.dp, 5.dp)
+//                                                )
+//                                                Spacer(
+//                                                    modifier = Modifier
+//                                                        .height(1.dp)
+//                                                        .fillMaxWidth()
+//                                                        .background(Color.LightGray)
+//                                                )
+//                                                Text(
+//                                                    text = "Edit",
+//                                                    modifier = Modifier
+//                                                        .clip(RoundedCornerShape(5.dp))
+//                                                        .fillMaxWidth()
+//                                                        .clickable { }
+//                                                        .padding(10.dp, 5.dp)
+//                                                )
+//                                            }
+//                                        }
+
                                     }
                                 }
                             }
@@ -294,11 +377,17 @@ fun ProfileScreen(
     }
 
     if (showGetImageOptions) {
-        UploadImagePopUp(launcher = activityResultLauncher, isClicked = {
-            if (it) {
+        BottomActionMenuPopUp(
+            options = hashMapOf("Upload from Gallery" to R.drawable.images),
+            onClick = {
+                showGetImageOptions = false
+                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                activityResultLauncher.launch(intent)
+            },
+            onOutsideClick = {
                 showGetImageOptions = false
             }
-        })
+        )
     }
 
     if (imageUri != null)
@@ -341,6 +430,70 @@ fun ProfileScreen(
             onBoxClick = { showProfileImage = false },
             withCloseButton = true,
             onCloseClick = { showProfileImage = false }
+        )
+    }
+
+    if (showRecipeActionMenu) {
+        BottomActionMenuPopUp(
+            options = hashMapOf("Edit" to R.drawable.pencil_icon, "Delete" to R.drawable.delete_icon),
+            onClick = { key ->
+                if (key == "Delete") {
+                    showDeleteConfirmation = true
+                    showRecipeActionMenu = false
+                }
+            },
+            onOutsideClick = {
+                showRecipeActionMenu = false
+                recipeIdWithAction = null
+            }
+        )
+    }
+
+    if (showDeleteConfirmation) {
+        ConfirmDialog(
+            message = "Are you sure you want to delete this recipe?",
+            buttonOkayName = "Yes",
+            onClickCancel = {
+                showDeleteConfirmation = false
+                recipeIdWithAction = null
+            },
+            onClickOkay = {
+                showDeleteConfirmation = false
+
+                if (recipeIdWithAction != null) {
+                    loading = true
+
+                    ownRecipesViewModel.deleteRecipe(recipeIdWithAction!!) { isSuccess, err ->
+                        loading = false
+
+                        if (isSuccess) {
+                            successDelete = true
+                        } else {
+                            error = err
+                        }
+                    }
+                }
+            }
+        )
+    }
+
+    if (successDelete) {
+        Dialog(
+            icon = "success",
+            message = "Recipe successfully deleted!",
+            onCloseClick = {
+                successDelete = false
+            }
+        )
+    }
+
+    if (error != null) {
+        Dialog(
+            icon = "warning",
+            message = error!!,
+            onCloseClick = {
+                error = null
+            }
         )
     }
 

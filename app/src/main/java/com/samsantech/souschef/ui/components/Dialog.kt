@@ -33,12 +33,17 @@ import com.samsantech.souschef.R
 import com.samsantech.souschef.ui.theme.Konkhmer_Sleokcher
 
 @Composable
-fun SuccessDialog(
+fun Dialog(
+    icon: String,
     message: String,
-    subMessage: String?,
-    buttonName: String,
-    onClick: () -> Unit
+    subMessage: String? = null,
+    onCloseClick: () -> Unit
 ) {
+    val iconId: Int = R.drawable.successful_vector
+    if (icon == "warning") {
+        R.drawable.exclamation_icon
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -53,7 +58,7 @@ fun SuccessDialog(
                     .align(Alignment.TopEnd)
                     .zIndex(2f)
                     .offset((-8).dp, 8.dp)
-                    .clickable { onClick() }
+                    .clickable { onCloseClick() }
             )
             Column(
                 modifier = Modifier
@@ -65,7 +70,7 @@ fun SuccessDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.successful_vector),
+                    painter = painterResource(id = iconId),
                     contentDescription = null,
                     tint = Color(0xFF16A637),
                     modifier = Modifier
@@ -87,8 +92,6 @@ fun SuccessDialog(
                         textAlign = TextAlign.Center
                     )
                 }
-//            Spacer(modifier = Modifier.height(20.dp))
-//            ColoredButton(onClick = onClick, text = buttonName)
             }
         }
     }

@@ -128,4 +128,16 @@ class FirebaseRecipeManager(
                 callback(false, getErrorMessage(it))
             }
     }
+
+    fun deleteRecipe(document: String, callback: (Boolean, String?) -> Unit) {
+        db.collection("recipes")
+            .document(document)
+            .delete()
+            .addOnSuccessListener {
+                callback(true, null)
+            }
+            .addOnFailureListener {
+                callback(false, getErrorMessage(it))
+            }
+    }
 }
