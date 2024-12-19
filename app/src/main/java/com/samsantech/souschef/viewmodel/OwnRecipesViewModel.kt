@@ -51,13 +51,14 @@ class OwnRecipesViewModel(
                 if (isSuccess) {
                     updateRecipes(recipe.value)
                     resetRecipe()
+                    action.value = OwnRecipeAction.ADD
                 }
             }
         )
     }
 
-    fun deleteRecipe(recipeId: String, callback: (Boolean, String?) -> Unit) {
-        firebaseRecipeManager.deleteRecipe(recipeId) { isSuccess, error ->
+    fun deleteRecipe(recipeId: String, photos: HashMap<String, Uri>, callback: (Boolean, String?) -> Unit) {
+        firebaseRecipeManager.deleteRecipe(recipeId, photos) { isSuccess, error ->
             if (isSuccess) {
                 val updatedRecipes = recipes.value.toMutableList()
                 val recipeIndexToRemove = updatedRecipes.indexOfFirst { it.id == recipeId }
@@ -77,14 +78,14 @@ class OwnRecipesViewModel(
         recipe.value = Recipe()
     }
 
-    fun updateRecipes(recipe: Recipe) {
+    private fun updateRecipes(recipe: Recipe) {
         val updatedRecipes = recipes.value.toMutableList()
         val recipeIndexToUpdate = updatedRecipes.indexOfFirst { it.id == recipe.id }
 
         if (recipeIndexToUpdate != -1) {
             updatedRecipes[recipeIndexToUpdate] = recipe
         } else {
-            updatedRecipes.add(1, recipe)
+            updatedRecipes.add(0, recipe)
         }
 
         recipes.value = updatedRecipes

@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.samsantech.souschef.ui.theme.Green
 import com.samsantech.souschef.ui.theme.Yellow
+import com.samsantech.souschef.utils.OwnRecipeAction
+import com.samsantech.souschef.viewmodel.OwnRecipesViewModel
 
 
 @Composable
@@ -36,6 +38,7 @@ fun BottomNavigationBar(
     onNavigateToSearch: () -> Unit,
     //onNavigateToTiktokVideos: () -> Unit,
     onNavigateToProfile: () -> Unit,
+    ownRecipesViewModel: OwnRecipesViewModel,
     modifier: Modifier = Modifier
 ) {
     val bottomNavigationItems = arrayOf(
@@ -62,7 +65,11 @@ fun BottomNavigationBar(
                     onClick = {
                         when (item["name"]) {
                             "Home" -> onNavigateToHome()
-                            "Create recipe" -> onNavigateToCreateRecipe()
+                            "Create recipe" -> {
+                                onNavigateToCreateRecipe()
+                                ownRecipesViewModel.resetRecipe()
+                                ownRecipesViewModel.action.value = OwnRecipeAction.ADD
+                            }
                             "Search" -> onNavigateToSearch()
                             //"Tiktok videos" -> onNavigateToTiktokVideos()
                             "Profile" -> onNavigateToProfile()

@@ -145,16 +145,23 @@ class FirebaseRecipeManager(
         }
     }
 
-    fun deleteRecipe(document: String, callback: (Boolean, String?) -> Unit) {
+    fun deleteRecipe(document: String, photos: HashMap<String, Uri>, callback: (Boolean, String?) -> Unit) {
         db.collection("recipes")
             .document(document)
             .delete()
             .addOnSuccessListener {
+                callback(true, null)
+
                 val storageRef = storage.reference
                 val recipesRef = storageRef.child("recipes/${document}")
 
-                recipesRef.delete().addOnCompleteListener {
-                    callback(true, null)
+                photos.forEach { photo ->
+                    val photoRef = recipesRef.child("${photo.key}.jpg")
+
+                    photoRef.delete()
+                        .addOnFailureListener {
+                            println(it)
+                        }
                 }
             }
             .addOnFailureListener {
@@ -196,6 +203,7 @@ class FirebaseRecipeManager(
                     )
                         .addOnSuccessListener {
                             recipe.photosUrl[photo.key] = url
+                            recipe.photosUri.remove(photo.key)
                             updatedRecipe(recipe)
                         }
                         .addOnFailureListener {

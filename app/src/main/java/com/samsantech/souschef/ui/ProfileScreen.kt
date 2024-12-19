@@ -426,7 +426,7 @@ fun ProfileScreen(
                 if (recipeWithAction != null) {
                     loading = true
 
-                    ownRecipesViewModel.deleteRecipe(recipeWithAction!!.id!!) { isSuccess, err ->
+                    ownRecipesViewModel.deleteRecipe(recipeWithAction!!.id!!, recipeWithAction!!.photosUrl) { isSuccess, err ->
                         loading = false
 
                         if (isSuccess) {

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
+import com.samsantech.souschef.viewmodel.OwnRecipesViewModel
 
 @Composable
 fun ContentBottomNavigationWrapper(
@@ -14,6 +15,7 @@ fun ContentBottomNavigationWrapper(
     onNavigateToSearch: () -> Unit,
     //onNavigateToTiktokVideos: () -> Unit,
     onNavigateToProfile: () -> Unit,
+    ownRecipesViewModel: OwnRecipesViewModel,
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold (
@@ -25,7 +27,8 @@ fun ContentBottomNavigationWrapper(
                 onNavigateToCreateRecipe,
                 onNavigateToSearch,
                 //onNavigateToTiktokVideos,
-                onNavigateToProfile
+                onNavigateToProfile,
+                ownRecipesViewModel
             )
         }
     ) { paddingValues ->

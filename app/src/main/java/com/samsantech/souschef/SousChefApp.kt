@@ -206,6 +206,7 @@ fun SousChefApp(
                             popUpTo(Profile) { inclusive = true }
                         }
                     },
+                    ownRecipesViewModel
                 ) { paddingValues ->
                     HomeScreen(paddingValues)
                 }
@@ -231,6 +232,7 @@ fun SousChefApp(
                             popUpTo(Profile) { inclusive = true }
                         }
                     },
+                    ownRecipesViewModel
                 ) { paddingValues ->
                     ProfileScreen(
                         paddingValues,
@@ -264,6 +266,7 @@ fun SousChefApp(
                             popUpTo(Profile) { inclusive = true }
                         }
                     },
+                    ownRecipesViewModel
                 ) { paddingValues ->
                     SearchScreen(paddingValues)
                 }
@@ -288,6 +291,7 @@ fun SousChefApp(
                         navController.navigate(route = Home) {
                             popUpTo(CreateRecipeOne) { inclusive = true }
                         }
+                        ownRecipesViewModel.resetRecipe()
                     }
                 )
             }
@@ -306,6 +310,7 @@ fun SousChefApp(
                         navController.navigate(route = Home) {
                             popUpTo(CreateRecipeOne) { inclusive = true }
                         }
+                        ownRecipesViewModel.resetRecipe()
                     }
                 )
             }
@@ -324,6 +329,7 @@ fun SousChefApp(
                         navController.navigate(route = Home) {
                             popUpTo(CreateRecipeOne) { inclusive = true }
                         }
+                        ownRecipesViewModel.resetRecipe()
                     }
                 )
             }
@@ -340,6 +346,7 @@ fun SousChefApp(
                         navController.navigate(route = Home) {
                             popUpTo(CreateRecipeOne) { inclusive = true }
                         }
+                        ownRecipesViewModel.resetRecipe()
                     }
                 )
             }
